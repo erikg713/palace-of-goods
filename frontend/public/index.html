@@ -1,102 +1,41 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Palace of Goods</title>
-
-    <!-- Pi Network SDK -->
-    <script src="https://sdk.minepi.com/pi-sdk.js"></script>
-    <script>
-        // Initialize the Pi SDK in sandbox mode for testing
-        Pi.init({ version: "2.0", sandbox: true });
-    </script>
-</head>
+    </head>
 <body>
     <h1>Welcome to Palace of Goods</h1>
-    <button onclick="authenticateUser()">Authenticate</button>
-    <button onclick="initiatePayment()">Make a Payment</button>
+    <button onclick="authenticateUser()">Sign In with Pi</button>
+    <button onclick="initiatePayment()">Pay with Pi</button>
 
     <script>
-        let accessToken;
+        // ...
 
-        // Step 2: Authenticate the User
         function authenticateUser() {
-            const scopes = ['payments', 'username'];
-
-            function onIncompletePaymentFound(payment) {
-                console.log('Incomplete payment found');
-                const paymentId = payment.identifier;
-                const txid = payment.transaction.txid;
-
-                // Send incomplete payment details to server
-                fetch('/payment/complete', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ paymentId, txid, debug: 'cancel' })
-                }).then(response => response.json())
-                  .then(data => console.log("Incomplete payment handled:", data));
-            }
+            // ...
 
             Pi.authenticate(scopes, onIncompletePaymentFound).then(function(auth) {
-                console.log(`Authentication successful!`);
-                accessToken = auth.accessToken; // Store the access token
+                console.log("Authentication successful!");
+                localStorage.setItem('accessToken', auth.accessToken); // Store securely
+                // ...
             }).catch(function(error) {
-                console.error("Authentication error:", error);
+                // ...
+                alert("Authentication failed. Please try again.");
             });
         }
 
-        // Step 3: Create Payment Data and Callbacks
         function initiatePayment() {
-            const paymentData = {
-                amount: 5, // Specify the amount in Pi
-                memo: "Purchase on Palace of Goods",
-                metadata: { orderId: "12345", item: "Product A" }
-            };
+            // ...
 
-            const onReadyForServerApproval = (paymentId) => {
-                console.log("Ready for server approval:", paymentId);
-                fetch('/payments/approve', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ paymentId })
-                }).then(response => response.json())
-                  .then(data => console.log("Approval response:", data));
-            };
-
-            const onReadyForServerCompletion = (paymentId, txid) => {
-                console.log("Ready for server completion:", paymentId, txid);
-                fetch('/payments/complete', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ paymentId, txid })
-                }).then(response => response.json())
-                  .then(data => console.log("Completion response:", data));
-            };
-
-            const onCancel = () => {
-                console.log("Payment was cancelled by the user.");
-            };
-
-            const onError = (error) => {
-                console.error("Payment error:", error);
-            };
-
-            const paymentCallbacks = {
-                onReadyForServerApproval,
-                onReadyForServerCompletion,
-                onCancel,
-                onError
-            };
-
-            // Initiate the payment with Pi Network
             Pi.createPayment(paymentData, paymentCallbacks)
                 .then(function(payment) {
                     console.log("Payment initiated:", payment);
+                    // Display a loading indicator or success message
                 })
                 .catch(function(error) {
                     console.error("Error initiating payment:", error);
+                    alert("Payment failed. Please try again.");
                 });
         }
     </script>
 </body>
+</html>
