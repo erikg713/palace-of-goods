@@ -90,3 +90,18 @@ const Home = () => (
 );
 
 export default Home;
+import React from 'react';
+import { Link } from 'react-router-dom';
+
+const Home = () => (
+  <div>
+    <h1>Home Page</h1>
+    <Link to="/onboarding">Go to Onboarding</Link>
+    <ul>
+      <li><Link to="/product/1">Product 1</Link></li>
+      <li><Link to="/product/2">Product 2</Link></li>
+    </ul>
+  </div>
+);
+
+export default Home;
