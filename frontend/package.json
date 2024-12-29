@@ -18,4 +18,9 @@
     "eject": "react-scripts eject"
   }
 }
-
+"scripts": {
+  "lint": "eslint src --ext .js,.jsx",
+  "format": "prettier --write src/**/*.js",
+  "dev": "npm run start",
+  "deploy": "npm run build && npm run deploy"
+}
