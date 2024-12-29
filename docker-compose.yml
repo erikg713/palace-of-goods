@@ -6,19 +6,26 @@ services:
       context: ./backend
       args:
         - FLASK_ENV=production
-    env_file:
-      - ./backend/.env.production
+    ports:
+      - "5000:5000"
+    environment:
+      - FLASK_ENV=production
     volumes:
       - ./backend:/app
     depends_on:
       - db
+    command: "flask run --host=0.0.0.0 --port=5000"
 
   frontend:
-    build: ./frontend
-    volumes:
-      - ./frontend:/app
+    build:
+      context: ./frontend
+    ports:
+      - "3000:3000"
     environment:
       - NODE_ENV=production
+    volumes:
+      - ./frontend:/app
+    command: "npm start"
 
   db:
     image: postgres:13
@@ -30,6 +37,17 @@ services:
       - pgdata:/var/lib/postgresql/data
     ports:
       - "5432:5432"
+
+  ml:
+    build:
+      context: ./ml
+    ports:
+      - "8000:8000"
+    environment:
+      - DATABASE_URI=sqlite:///ml.db
+    volumes:
+      - ./ml:/app
+    command: "python main.py"
 
   nginx:
     image: nginx:alpine
@@ -43,28 +61,3 @@ services:
 
 volumes:
   pgdata:
-
-version: '3.8'
-services:
-  backend:
-    build:
-      context: ./backend
-    ports:
-      - "5000:5000"
-    environment:
-      - NODE_ENV=production
-      - PORT=5000
-    volumes:
-      - ./backend:/app
-    command: "node server.js"
-
-  ml:
-    build:
-      context: ./ml
-    ports:
-      - "8000:8000"
-    environment:
-      - DATABASE_URI=sqlite:///ml.db
-    volumes:
-      - ./ml:/app
-    command: "python main.py"
