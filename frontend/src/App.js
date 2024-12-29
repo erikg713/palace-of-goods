@@ -1,28 +1,20 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
 import Home from './pages/Home';
 import ProductDetails from './pages/ProductDetails';
+import Onboarding from './Onboarding';
+import Layout from './components/Layout';
 
 const App = () => (
   <Router>
-    <Routes>
-      <Route path="/" element={<Home />} />
-      <Route path="/product/:id" element={<ProductDetails />} />
-    </Routes>
+    <Layout>
+      <Routes>
+        <Route path="/onboarding" element={<Onboarding />} />
+        <Route path="/" element={<Home />} />
+        <Route path="/product/:id" element={<ProductDetails />} />
+      </Routes>
+    </Layout>
   </Router>
 );
-
-export default App;
-
-import React from 'react';
-import Onboarding from './Onboarding';
-
-function App() {
-    return (
-        <div>
-            <Onboarding />
-        </div>
-    );
-}
 
 export default App;
