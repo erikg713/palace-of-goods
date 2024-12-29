@@ -1,6 +1,10 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import App from './App';
+import './styles/tailwind.css'; // Tailwind CSS entry
+import React from 'react';
+import ReactDOM from 'react-dom';
+import App from './App';
 import { AuthProvider } from './context/AuthContext';
 import { Web3Provider } from './context/Web3Context';
 import 'bootstrap/dist/css/bootstrap.min.css'; // Bootstrap CSS
