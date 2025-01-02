@@ -13,3 +13,9 @@ ALTER TABLE orders
 ADD CONSTRAINT fk_customer
 FOREIGN KEY (customer_id) REFERENCES customers(customer_id)
 ON DELETE CASCADE;
+
+INSERT INTO orders (customer_id, total_amount, payment_method, shipping_address, order_status) 
+VALUES 
+(1, 99.99, 'Credit Card', '123 Main St, Cityville', 'Pending'),
+(2, 49.99, 'PayPal', '456 Elm St, Townsville', 'Processing'),
+(3, 149.99, 'Pi Network', '789 Pine St, Villageton', 'Shipped');
