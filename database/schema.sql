@@ -62,3 +62,24 @@ CREATE TABLE transactions (
     transaction_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     payment_status VARCHAR(50) NOT NULL
 );
+
+-- Add columns for more functionality and indexing
+ALTER TABLE customers ADD COLUMN address TEXT;
+ALTER TABLE orders ADD COLUMN tracking_number VARCHAR(50), ADD COLUMN discount_code VARCHAR(50);
+
+-- Add detailed product information table
+CREATE TABLE products (
+    product_id SERIAL PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    description TEXT,
+    price NUMERIC(10, 2) NOT NULL,
+    stock INT DEFAULT 0,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Update order_items to reference products
+ALTER TABLE order_items ADD COLUMN product_id INT REFERENCES products(product_id);
+
+-- Index for optimized searches
+CREATE INDEX idx_product_name ON products(name);
+CREATE INDEX idx_order_status ON orders(status);
