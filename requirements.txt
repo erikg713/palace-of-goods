@@ -17,4 +17,4 @@ Flask-Login==0.6.3
 gunicorn==22.0.0
 
 # Optional Payment Integration
-PI_NETWORK_SDK 1.0
+pi-network-sdk==1.0
