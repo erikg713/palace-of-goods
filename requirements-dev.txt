@@ -1,1 +1,6 @@
-dev requirements 
+pytest
+pytest-cov
+flake8
+mypy
+bandit
+tox
