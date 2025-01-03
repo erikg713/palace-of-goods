@@ -1,9 +1,12 @@
 name: Code Scans
+
 on:
   push:
     branches:
       - main
   pull_request:
+    branches:
+      - main
 
 jobs:
   security:
@@ -11,8 +14,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+
       - name: Install dependencies
         run: pip install bandit flake8
+
       - name: Static Code Analysis
         run: |
           flake8 app/
