@@ -1,6 +1,17 @@
 import express, { Router, Request, Response } from 'express';
 import Product from '../models/Product';
+import express from "express";
+import pool from "../utils/db";
+import { authMiddleware } from "../middleware/auth";
 
+const router = express.Router();
+
+router.get("/", authMiddleware, async (req, res) => {
+  const result = await pool.query("SELECT * FROM products");
+  res.json(result.rows);
+});
+
+export default router;
 const router: Router = express.Router();
 
 router.get('/', async (req: Request, res: Response) => {
