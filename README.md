@@ -54,6 +54,7 @@ npm install --save-dev typescript ts-node nodemon @types/express @types/node @ty
 npm install @pinetwork/pi-backend
 npm install bcryptjs jsonwebtoken
 npm install --save-dev @types/jsonwebtoken
+npm install express-jwt
 ## FRONTEND SETUP ##
 npm install @pinetwork/pi-ui
 
