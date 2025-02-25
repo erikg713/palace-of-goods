@@ -15,3 +15,18 @@ router.get('/', async (req: Request, res: Response) => {
 // ... other routes (POST, PUT, DELETE)
 
 export default router;
+import express from "express";
+import pool from "../utils/db";
+
+const router = express.Router();
+
+router.get("/", async (req, res) => {
+  try {
+    const result = await pool.query("SELECT * FROM products");
+    res.json(result.rows);
+  } catch (error) {
+    res.status(500).json({ error: "Error fetching products" });
+  }
+});
+
+export default router;
