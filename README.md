@@ -36,4 +36,10 @@ cd backend
 npm init -y
 ---
 # Backend Dependencies #
+---
 npm install express mongoose dotenv cors
+cd backend
+npm install express cors mongoose dotenv
+npm install --save-dev typescript @types/node @types/express ts-node nodemon
+npx tsc --init
+---
