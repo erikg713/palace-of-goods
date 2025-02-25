@@ -39,3 +39,18 @@ export const signup = async (username, email, password) => {
 export const login = async (email, password) => {
   return axios.post(`${API_URL}/users/login`, { email, password });
 };
+import axios from "axios";
+
+const API_URL = "https://your-backend-url.com/api";
+
+export const getUserProfile = async () => {
+  return axios.get(`${API_URL}/users/profile`, {
+    headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+  });
+};
+
+export const getUserOrders = async () => {
+  return axios.get(`${API_URL}/orders`, {
+    headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+  });
+};
