@@ -28,3 +28,14 @@ export const verifyPayment = async (paymentId: string) => {
   const response = await axios.post(`${API_URL}/payment/verify`, { paymentId });
   return response.data;
 };
+import axios from "axios";
+
+const API_URL = "https://your-backend-url.com/api";
+
+export const signup = async (username, email, password) => {
+  return axios.post(`${API_URL}/users/signup`, { username, email, password });
+};
+
+export const login = async (email, password) => {
+  return axios.post(`${API_URL}/users/login`, { email, password });
+};
