@@ -55,6 +55,9 @@ npm install @pinetwork/pi-backend
 npm install bcryptjs jsonwebtoken
 npm install --save-dev @types/jsonwebtoken
 npm install express-jwt
+npm install multer
+npm install --save-dev @types/multer
+
 ## FRONTEND SETUP ##
 npm install @pinetwork/pi-ui
 
