@@ -27,3 +27,32 @@ app.get('/', (req: Request, res: Response) => {
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
 });
+// backend/src/app.ts
+import express from "express";
+import cors from "cors";
+import mongoose from "mongoose";
+import dotenv from "dotenv";
+import router from "./routes";
+
+dotenv.config();
+
+const app = express();
+
+// Middleware
+app.use(cors());
+app.use(express.json());
+
+// Routes
+app.use("/api", router);
+
+// MongoDB Connection
+mongoose
+  .connect(process.env.MONGO_URI as string)
+  .then(() => {
+    console.log("Connected to MongoDB");
+  })
+  .catch((err) => {
+    console.error("Error connecting to MongoDB:", err);
+  });
+
+export default app;
