@@ -1,18 +1,31 @@
 # palace-of-goods #
-
+----
 # Project Structure #
----
+
 palace-of-goods/
 ├── backend/
-│   ├── app.js
+│   ├── src/
+│   │   ├── app.ts
+│   │   ├── server.ts
+│   │   ├── routes/
+│   │   ├── controllers/
+│   │   ├── models/
+│   │   └── utils/
 │   ├── package.json
-│   ├── routes/
-│   └── models/
+│   ├── tsconfig.json
+│   └── .env
 ├── frontend/
 │   ├── public/
 │   ├── src/
+│   │   ├── components/
+│   │   ├── pages/
+│   │   ├── types/
+│   │   ├── App.tsx
+│   │   ├── index.tsx
+│   │   └── api.ts
 │   ├── package.json
-│   └── README.md
+│   ├── tsconfig.json
+│   └── .env
 ---
 
 **BACKEND**
