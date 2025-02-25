@@ -47,3 +47,16 @@ npx tsc --init
 ---
 node app.js 
 ---
+## Set Up the Frontend ##
+Create the frontend folder and initialize a React project:
+
+bash Install dependencies (if needed):
+cd ../
+npx create-react-app frontend
+cd frontend
+
+bash Configure the React development server:
+1.Open frontend/package.json and add a proxy to your backend server
+json2.Modify 
+frontend/src/App.js to fetch data from the backend
+javascript
