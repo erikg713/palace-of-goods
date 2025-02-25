@@ -1,31 +1,19 @@
 # palace-of-goods #
 
 # Project Structure #
+---
 palace-of-goods/
-├── client/          (React TypeScript Frontend)
-│   ├── src/
-│   │   ├── components/
-│   │   ├── pages/
-│   │   ├── services/       (web3.js interactions)
-│   │   ├── App.tsx
-│   │   └── ...
+├── backend/
+│   ├── app.js
+│   ├── package.json
+│   ├── routes/
+│   └── models/
+├── frontend/
 │   ├── public/
-│   ├── package.json
-│   └── tsconfig.json
-├── server/          (Node.js/Express Backend)
 │   ├── src/
-│   │   ├── controllers/
-│   │   ├── models/
-│   │   ├── routes/
-│   │   ├── services/     (database interactions)
-│   │   ├── app.ts
-│   │   └── ...
 │   ├── package.json
-│   ├── tsconfig.json
-│   └── .env           (Environment variables)
-├── package.json      (Root package.json for monorepo)
-└── README.md
-
+│   └── README.md
+---
 # Install Dependencies #
 **BACKEND**
 Initialize a Node.js project in the server directory:npm init -y
