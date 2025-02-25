@@ -31,3 +31,14 @@ router.post("/login", async (req, res) => {
 });
 
 export default router;
+router.get("/profile", authMiddleware, async (req, res) => {
+  try {
+    const userId = req.user.userId;
+    const user = await pool.query("SELECT id, username, email FROM users WHERE id = $1", [userId]);
+    if (!user.rows.length) return res.status(404).json({ error: "User not found" });
+    
+    res.json(user.rows[0]);
+  } catch (error) {
+    res.status(500).json({ error: "Error fetching user profile" });
+  }
+});
