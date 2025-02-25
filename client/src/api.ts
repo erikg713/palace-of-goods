@@ -54,3 +54,8 @@ export const getUserOrders = async () => {
     headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
   });
 };
+export const updateUserProfile = async (data) => {
+  return axios.put(`${API_URL}/users/profile`, data, {
+    headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+  });
+};
