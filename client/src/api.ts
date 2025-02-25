@@ -59,3 +59,14 @@ export const updateUserProfile = async (data) => {
     headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
   });
 };
+export const uploadProfilePicture = async (file) => {
+  const formData = new FormData();
+  formData.append("profilePic", file);
+
+  return axios.post(`${API_URL}/users/profile/picture`, formData, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+      Authorization: `Bearer ${localStorage.getItem("token")}`,
+    },
+  });
+};
