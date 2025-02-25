@@ -43,3 +43,7 @@ npm install express cors mongoose dotenv
 npm install --save-dev typescript @types/node @types/express ts-node nodemon
 npx tsc --init
 ---
+## Start the Server ##
+---
+node app.js 
+---
