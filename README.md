@@ -49,10 +49,11 @@ frontend/
 ## BACKEND SETUP ##
 cd backend
 npm init -y
-npm install express cors dotenv pg bcryptjs jsonwebtoken axios
+npm install express cors dotenv pg axios
 npm install --save-dev typescript ts-node nodemon @types/express @types/node @types/cors
 npm install @pinetwork/pi-backend
-
+npm install bcryptjs jsonwebtoken
+npm install --save-dev @types/jsonwebtoken
 ## FRONTEND SETUP ##
 npm install @pinetwork/pi-ui
 
