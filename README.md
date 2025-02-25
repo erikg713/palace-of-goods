@@ -53,6 +53,9 @@ npm install express cors dotenv pg bcryptjs jsonwebtoken axios
 npm install --save-dev typescript ts-node nodemon @types/express @types/node @types/cors
 npm install @pinetwork/pi-backend
 
+## FRONTEND SETUP ##
+npm install @pinetwork/pi-ui
+
 # Deployment #
 npm install -g vercel
 vercel
