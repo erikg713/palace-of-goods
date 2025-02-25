@@ -27,12 +27,6 @@ palace-of-goods/
 │   ├── tsconfig.json
 │   └── .env
 ---
-Backend Setup (Node.js + Express + TypeScript)
-1. Install Dependencies
-2. cd backend
-npm install express cors mongoose dotenv
-npm install --save-dev typescript @types/node @types/express ts-node nodemon
-npx tsc --init
 
 ## FRONTEND STRUCTURE ##
 ---
@@ -52,3 +46,11 @@ frontend/
 ├── package.json
 └── tsconfig.json
 ---
+## BACKEND SETUP ##
+cd backend
+npm init -y
+npm install express cors dotenv pg bcryptjs jsonwebtoken axios
+npm install --save-dev typescript ts-node nodemon @types/express @types/node @types/cors
+# Deployment #
+npm install -g vercel
+vercel
