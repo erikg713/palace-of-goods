@@ -15,8 +15,22 @@ interface CartState {
 
 // Load initial cart state from localStorage
 const loadCartFromLocalStorage = (): CartState => {
-  const storedCart = localStorage.getItem("cart");
-  return storedCart ? JSON.parse(storedCart) : { items: [] };
+  try {
+    const storedCart = localStorage.getItem("cart");
+    return storedCart ? JSON.parse(storedCart) : { items: [] };
+  } catch (error) {
+    console.error("Failed to load cart from localStorage:", error);
+    return { items: [] };
+  }
+};
+
+// Save cart state to localStorage
+const saveCartToLocalStorage = (state: CartState) => {
+  try {
+    localStorage.setItem("cart", JSON.stringify(state));
+  } catch (error) {
+    console.error("Failed to save cart to localStorage:", error);
+  }
 };
 
 // Create cart slice
@@ -31,11 +45,18 @@ const cartSlice = createSlice({
       } else {
         state.items.push(action.payload);
       }
-      localStorage.setItem("cart", JSON.stringify(state)); // Save to localStorage
+      saveCartToLocalStorage(state); // Save to localStorage
     },
     removeFromCart: (state, action: PayloadAction<number>) => {
       state.items = state.items.filter((item) => item.id !== action.payload);
-      localStorage.setItem("cart", JSON.stringify(state)); // Save to localStorage
+      saveCartToLocalStorage(state); // Save to localStorage
+    },
+    updateQuantity: (state, action: PayloadAction<{ id: number; quantity: number }>) => {
+      const item = state.items.find((item) => item.id === action.payload.id);
+      if (item) {
+        item.quantity = action.payload.quantity;
+      }
+      saveCartToLocalStorage(state); // Save to localStorage
     },
     clearCart: (state) => {
       state.items = [];
@@ -44,5 +65,5 @@ const cartSlice = createSlice({
   },
 });
 
-export const { addToCart, removeFromCart, clearCart } = cartSlice.actions;
+export const { addToCart, removeFromCart, updateQuantity, clearCart } = cartSlice.actions;
 export default cartSlice.reducer;
