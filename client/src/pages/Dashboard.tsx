@@ -1,71 +1,20 @@
 import { useEffect, useState } from "react";
-import { getUserProfile, updateUserProfile } from "../api";
-
-const Dashboard = () => {
-  const [user, setUser] = useState(null);
-  const [form, setForm] = useState({ username: "", email: "", password: "" });
-  const [message, setMessage] = useState("");
-
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const userData = await getUserProfile();
-        setUser(userData.data);
-        setForm({ username: userData.data.username, email: userData.data.email, password: "" });
-      } catch (error) {
-        console.error("Error loading data", error);
-      }
-    };
-
-    fetchData();
-  }, []);
-
-  const handleChange = (e) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    try {
-      const updatedUser = await updateUserProfile(form);
-      setUser(updatedUser.data);
-      setMessage("Profile updated successfully!");
-    } catch {
-      setMessage("Update failed.");
-    }
-  };
-
-  return (
-    <div>
-      <h2>User Dashboard</h2>
-      {user && (
-        <div>
-          <p><strong>Username:</strong> {user.username}</p>
-          <p><strong>Email:</strong> {user.email}</p>
-        </div>
-      )}
-
-      <h3>Edit Profile</h3>
-      <form onSubmit={handleSubmit}>
-        <input type="text" name="username" value={form.username} onChange={handleChange} placeholder="New Username" />
-        <input type="email" name="email" value={form.email} onChange={handleChange} placeholder="New Email" />
-        <input type="password" name="password" value={form.password} onChange={handleChange} placeholder="New Password" />
-        <button type="submit">Update Profile</button>
-      </form>
-      <p>{message}</p>
-    </div>
-  );
-};
-
-export default Dashboard;
-import { useEffect, useState } from "react";
 import { getUserProfile, updateUserProfile, uploadProfilePicture } from "../api";
+import { TextField, Button, Typography, Container, Avatar, CircularProgress } from "@mui/material";
+
+interface User {
+  id: number;
+  username: string;
+  email: string;
+  profile_pic?: string;
+}
 
 const Dashboard = () => {
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState<User | null>(null);
   const [form, setForm] = useState({ username: "", email: "", password: "" });
-  const [message, setMessage] = useState("");
-  const [profilePic, setProfilePic] = useState("");
+  const [message, setMessage] = useState<string>("");
+  const [loading, setLoading] = useState<boolean>(true);
+  const [profilePic, setProfilePic] = useState<string>("");
 
   useEffect(() => {
     const fetchData = async () => {
@@ -75,19 +24,22 @@ const Dashboard = () => {
         setForm({ username: userData.data.username, email: userData.data.email, password: "" });
         setProfilePic(userData.data.profile_pic);
       } catch (error) {
-        console.error("Error loading data", error);
+        setMessage("Failed to load user data.");
+      } finally {
+        setLoading(false);
       }
     };
 
     fetchData();
   }, []);
 
-  const handleChange = (e) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setMessage("");
     try {
       const updatedUser = await updateUserProfile(form);
       setUser(updatedUser.data);
@@ -97,8 +49,8 @@ const Dashboard = () => {
     }
   };
 
-  const handleFileUpload = async (e) => {
-    const file = e.target.files[0];
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
     if (!file) return;
 
     try {
@@ -110,30 +62,36 @@ const Dashboard = () => {
     }
   };
 
+  if (loading) return <CircularProgress style={{ display: "block", margin: "20px auto" }} />;
+
   return (
-    <div>
-      <h2>User Dashboard</h2>
+    <Container maxWidth="sm" style={{ textAlign: "center", marginTop: "20px" }}>
+      <Typography variant="h4">User Dashboard</Typography>
       {user && (
-        <div>
-          {profilePic && <img src={`https://your-backend-url.com${profilePic}`} alt="Profile" width="100" />}
-          <p><strong>Username:</strong> {user.username}</p>
-          <p><strong>Email:</strong> {user.email}</p>
-        </div>
+        <>
+          <Avatar
+            src={profilePic ? `https://your-backend-url.com${profilePic}` : "/default-avatar.png"}
+            alt="Profile"
+            sx={{ width: 100, height: 100, margin: "10px auto" }}
+          />
+          <Typography variant="h6">Username: {user.username}</Typography>
+          <Typography variant="h6">Email: {user.email}</Typography>
+        </>
       )}
 
-      <h3>Edit Profile</h3>
-      <form onSubmit={handleSubmit}>
-        <input type="text" name="username" value={form.username} onChange={handleChange} placeholder="New Username" />
-        <input type="email" name="email" value={form.email} onChange={handleChange} placeholder="New Email" />
-        <input type="password" name="password" value={form.password} onChange={handleChange} placeholder="New Password" />
-        <button type="submit">Update Profile</button>
+      <Typography variant="h5" sx={{ marginTop: 3 }}>Edit Profile</Typography>
+      <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+        <TextField label="Username" name="username" value={form.username} onChange={handleChange} required />
+        <TextField label="Email" type="email" name="email" value={form.email} onChange={handleChange} required />
+        <TextField label="Password" type="password" name="password" value={form.password} onChange={handleChange} />
+        <Button type="submit" variant="contained" color="primary">Update Profile</Button>
       </form>
 
-      <h3>Change Profile Picture</h3>
+      <Typography variant="h5" sx={{ marginTop: 3 }}>Change Profile Picture</Typography>
       <input type="file" accept="image/*" onChange={handleFileUpload} />
       
-      <p>{message}</p>
-    </div>
+      {message && <Typography color={message.includes("failed") ? "error" : "success"}>{message}</Typography>}
+    </Container>
   );
 };
 
