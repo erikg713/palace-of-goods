@@ -1,17 +1,17 @@
 import { useEffect, useState } from "react";
-import { getUserProfile, getUserOrders } from "../api";
+import { getUserProfile, updateUserProfile } from "../api";
 
 const Dashboard = () => {
   const [user, setUser] = useState(null);
-  const [orders, setOrders] = useState([]);
+  const [form, setForm] = useState({ username: "", email: "", password: "" });
+  const [message, setMessage] = useState("");
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         const userData = await getUserProfile();
-        const ordersData = await getUserOrders();
         setUser(userData.data);
-        setOrders(ordersData.data);
+        setForm({ username: userData.data.username, email: userData.data.email, password: "" });
       } catch (error) {
         console.error("Error loading data", error);
       }
@@ -19,6 +19,21 @@ const Dashboard = () => {
 
     fetchData();
   }, []);
+
+  const handleChange = (e) => {
+    setForm({ ...form, [e.target.name]: e.target.value });
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      const updatedUser = await updateUserProfile(form);
+      setUser(updatedUser.data);
+      setMessage("Profile updated successfully!");
+    } catch {
+      setMessage("Update failed.");
+    }
+  };
 
   return (
     <div>
@@ -30,16 +45,14 @@ const Dashboard = () => {
         </div>
       )}
 
-      <h3>Order History</h3>
-      {orders.length > 0 ? (
-        <ul>
-          {orders.map((order) => (
-            <li key={order.id}>Order #{order.id} - ${order.amount}</li>
-          ))}
-        </ul>
-      ) : (
-        <p>No orders found.</p>
-      )}
+      <h3>Edit Profile</h3>
+      <form onSubmit={handleSubmit}>
+        <input type="text" name="username" value={form.username} onChange={handleChange} placeholder="New Username" />
+        <input type="email" name="email" value={form.email} onChange={handleChange} placeholder="New Email" />
+        <input type="password" name="password" value={form.password} onChange={handleChange} placeholder="New Password" />
+        <button type="submit">Update Profile</button>
+      </form>
+      <p>{message}</p>
     </div>
   );
 };
