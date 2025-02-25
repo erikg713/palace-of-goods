@@ -33,3 +33,22 @@ Backend Setup (Node.js + Express + TypeScript)
 npm install express cors mongoose dotenv
 npm install --save-dev typescript @types/node @types/express ts-node nodemon
 npx tsc --init
+
+## FRONTEND STRUCTURE ##
+---
+frontend/
+├── public/
+│   ├── index.html
+│   └── assets/
+├── src/
+│   ├── components/   # Reusable UI elements
+│   ├── pages/        # Main pages
+│   ├── redux/        # State management
+│   ├── types/        # TypeScript interfaces
+│   ├── api.ts        # API handler
+│   ├── App.tsx       # Main component
+│   ├── index.tsx     # Entry point
+│   └── styles.css    # Global styles
+├── package.json
+└── tsconfig.json
+---
