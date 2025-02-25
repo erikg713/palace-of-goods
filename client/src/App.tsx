@@ -7,7 +7,20 @@ import Dashboard from "./pages/Dashboard";
 import Checkout from "./pages/Checkout";
 import Navbar from "./components/Navbar";
 import { useContext } from "react";
+import React from "react";
+import ReactDOM from "react-dom/client";
+import App from "./App";
+import StateManagement from "./redux/StateManagement";
+import "./styles.css";
 
+const root = ReactDOM.createRoot(document.getElementById("root") as HTMLElement);
+root.render(
+  <React.StrictMode>
+    <StateManagement>
+      <App />
+    </StateManagement>
+  </React.StrictMode>
+);
 const ProtectedRoute = ({ children }) => {
   const { user } = useContext(AuthContext);
   return user ? children : <Navigate to="/login" />;
