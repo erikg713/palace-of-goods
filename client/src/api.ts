@@ -70,3 +70,8 @@ export const uploadProfilePicture = async (file) => {
     },
   });
 };
+export const checkSession = async () => {
+  return axios.get(`${API_URL}/users/session`, {
+    headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+  });
+};
