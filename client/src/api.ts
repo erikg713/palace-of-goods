@@ -2,63 +2,40 @@ import axios from "axios";
 
 const API_URL = "https://your-backend-url.com/api";
 
-export const getProducts = async () => {
-  return axios.get(`${API_URL}/products`);
-};
+// 🛍️ Products API
+export const getProducts = async () => axios.get(`${API_URL}/products`);
+export const getProduct = async (id) => axios.get(`${API_URL}/products/${id}`);
+export const addToCart = async (product) => axios.post(`${API_URL}/cart`, product);
 
-export const getProduct = async (id) => {
-  return axios.get(`${API_URL}/products/${id}`);
-};
-
-export const addToCart = async (product) => {
-  return axios.post(`${API_URL}/cart`, product);
-};
-import axios from "axios";
-
-const API_URL = "https://your-backend-url.com/api";
-
-// Create a payment request
+// 💰 Payments API
 export const createPayment = async (amount: number, userId: string) => {
   const response = await axios.post(`${API_URL}/payment/create`, { amount, userId });
   return response.data;
 };
 
-// Verify payment
 export const verifyPayment = async (paymentId: string) => {
   const response = await axios.post(`${API_URL}/payment/verify`, { paymentId });
   return response.data;
 };
-import axios from "axios";
 
-const API_URL = "https://your-backend-url.com/api";
+// 🔐 Authentication API
+export const signup = async (username, email, password) =>
+  axios.post(`${API_URL}/users/signup`, { username, email, password });
 
-export const signup = async (username, email, password) => {
-  return axios.post(`${API_URL}/users/signup`, { username, email, password });
-};
+export const login = async (email, password) =>
+  axios.post(`${API_URL}/users/login`, { email, password });
 
-export const login = async (email, password) => {
-  return axios.post(`${API_URL}/users/login`, { email, password });
-};
-import axios from "axios";
-
-const API_URL = "https://your-backend-url.com/api";
-
-export const getUserProfile = async () => {
-  return axios.get(`${API_URL}/users/profile`, {
+// 👤 User Profile API
+export const getUserProfile = async () =>
+  axios.get(`${API_URL}/users/profile`, {
     headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
   });
-};
 
-export const getUserOrders = async () => {
-  return axios.get(`${API_URL}/orders`, {
+export const updateUserProfile = async (data) =>
+  axios.put(`${API_URL}/users/profile`, data, {
     headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
   });
-};
-export const updateUserProfile = async (data) => {
-  return axios.put(`${API_URL}/users/profile`, data, {
-    headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
-  });
-};
+
 export const uploadProfilePicture = async (file) => {
   const formData = new FormData();
   formData.append("profilePic", file);
@@ -70,8 +47,15 @@ export const uploadProfilePicture = async (file) => {
     },
   });
 };
-export const checkSession = async () => {
-  return axios.get(`${API_URL}/users/session`, {
+
+// 📦 Orders API
+export const getUserOrders = async () =>
+  axios.get(`${API_URL}/orders`, {
     headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
   });
-};
+
+// 🔄 Session API
+export const checkSession = async () =>
+  axios.get(`${API_URL}/users/session`, {
+    headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+  });
