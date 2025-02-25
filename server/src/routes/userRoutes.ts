@@ -90,3 +90,39 @@ router.put("/profile", authMiddleware, async (req, res) => {
 });
 
 export default router;
+import express from "express";
+import { authMiddleware } from "../middleware/auth";
+import upload from "../middleware/upload";
+import pool from "../utils/db";
+
+const router = express.Router();
+
+// Upload Profile Picture
+router.post("/profile/picture", authMiddleware, upload.single("profilePic"), async (req, res) => {
+  try {
+    const userId = req.user.userId;
+    const profilePicPath = `/uploads/${req.file.filename}`;
+
+    await pool.query("UPDATE users SET profile_pic = $1 WHERE id = $2", [profilePicPath, userId]);
+
+    res.json({ profilePic: profilePicPath });
+  } catch (error) {
+    res.status(500).json({ error: "Error uploading profile picture" });
+  }
+});
+
+// Get User Profile (Including Picture)
+router.get("/profile", authMiddleware, async (req, res) => {
+  try {
+    const userId = req.user.userId;
+    const user = await pool.query("SELECT id, username, email, profile_pic FROM users WHERE id = $1", [userId]);
+
+    if (!user.rows.length) return res.status(404).json({ error: "User not found" });
+
+    res.json(user.rows[0]);
+  } catch (error) {
+    res.status(500).json({ error: "Error fetching user profile" });
+  }
+});
+
+export default router;
