@@ -42,3 +42,51 @@ router.get("/profile", authMiddleware, async (req, res) => {
     res.status(500).json({ error: "Error fetching user profile" });
   }
 });
+import express from "express";
+import bcrypt from "bcryptjs";
+import { authMiddleware } from "../middleware/auth";
+import pool from "../utils/db";
+
+const router = express.Router();
+
+// Update user info
+router.put("/profile", authMiddleware, async (req, res) => {
+  try {
+    const userId = req.user.userId;
+    const { username, email, password } = req.body;
+
+    let updateQuery = "UPDATE users SET";
+    let values = [];
+    let index = 1;
+
+    if (username) {
+      updateQuery += ` username = $${index},`;
+      values.push(username);
+      index++;
+    }
+
+    if (email) {
+      updateQuery += ` email = $${index},`;
+      values.push(email);
+      index++;
+    }
+
+    if (password) {
+      const hashedPassword = await bcrypt.hash(password, 10);
+      updateQuery += ` password = $${index},`;
+      values.push(hashedPassword);
+      index++;
+    }
+
+    updateQuery = updateQuery.slice(0, -1); // Remove last comma
+    updateQuery += ` WHERE id = $${index} RETURNING id, username, email`;
+    values.push(userId);
+
+    const result = await pool.query(updateQuery, values);
+    res.json(result.rows[0]);
+  } catch (error) {
+    res.status(500).json({ error: "Error updating profile" });
+  }
+});
+
+export default router;
