@@ -58,4 +58,5 @@ npm install @pinetwork/pi-ui
 
 # Deployment #
 npm install -g vercel
+npm run build
 vercel
