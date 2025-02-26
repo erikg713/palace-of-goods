@@ -68,3 +68,6 @@ vercel
 ## DOCKER SETUP ##
 docker build -t palace-of-goods-server 
 docker run -d -p 5000:5000 --env-file .env --name palace-of-goods-server palace-of-goods-server
+docker login
+docker tag palace-of-goods-server YOUR_DOCKERHUB_USERNAME/palace-of-goods-server
+docker push YOUR_DOCKERHUB_USERNAME/palace-of-goods-server
