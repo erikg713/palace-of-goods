@@ -65,3 +65,6 @@ npm install @pinetwork/pi-ui
 npm install -g vercel
 npm run build
 vercel
+## DOCKER SETUP ##
+docker build -t palace-of-goods-server 
+docker run -d -p 5000:5000 --env-file .env --name palace-of-goods-server palace-of-goods-server
