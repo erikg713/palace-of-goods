@@ -138,3 +138,6 @@ router.get("/session", authMiddleware, async (req, res) => {
     res.status(500).json({ error: "Error verifying session" });
   }
 });
+router.post("/signup", userController.registerUser);
+router.post("/login", userController.loginUser);
+router.get("/profile", authMiddleware, userController.getUserProfile);
