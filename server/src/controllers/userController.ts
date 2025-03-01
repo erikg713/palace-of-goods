@@ -76,3 +76,21 @@ export const loginUser = async (req: Request, res: Response) => {
   const token = jwt.sign({ id: user.id, role: user.role }, process.env.JWT_SECRET as string);
   res.json({ token, user });
 };
+import { Request, Response } from "express";
+import { User } from "../models/User";
+
+export const updateProfilePicture = async (req: Request, res: Response) => {
+  try {
+    if (!req.file) return res.status(400).json({ error: "No image uploaded" });
+
+    const user = await User.findByPk(req.user?.id);
+    if (!user) return res.status(404).json({ error: "User not found" });
+
+    user.profilePic = (req.file as any).path;
+    await user.save();
+
+    res.json({ message: "Profile picture updated", profilePic: user.profilePic });
+  } catch (error) {
+    res.status(500).json({ error: "Failed to upload image" });
+  }
+};
