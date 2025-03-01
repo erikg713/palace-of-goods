@@ -141,3 +141,12 @@ router.get("/session", authMiddleware, async (req, res) => {
 router.post("/signup", userController.registerUser);
 router.post("/login", userController.loginUser);
 router.get("/profile", authMiddleware, userController.getUserProfile);
+import express from "express";
+import upload from "../middleware/uploadMiddleware";
+import { updateProfilePicture } from "../controllers/userController";
+
+const router = express.Router();
+
+router.post("/profile/picture", upload.single("image"), updateProfilePicture);
+
+export default router;
