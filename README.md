@@ -1,10 +1,6 @@
-
-
----
-
 Palace of Goods
 
-Palace of Goods is a Web3-powered marketplace where users can buy and sell products using Pi Network cryptocurrency. The platform enables secure, decentralized transactions and provides a 10% profit model on each sale. Future expansions include Ethereum, Bitcoin, and Polygon network integrations.
+A Web3-powered decentralized marketplace using Node.js, Express, and React (TypeScript).
 
 
 ---
@@ -37,46 +33,48 @@ License
 
 Features
 
-✅ Buy & Sell goods using Pi Network cryptocurrency
-✅ Secure transactions powered by blockchain technology
-✅ User authentication with JWT (JSON Web Token)
-✅ Flask-based API backend with PostgreSQL database
-✅ React.js frontend (React Native planned for mobile)
-✅ Decentralized finance (DeFi) integration for payments
-✅ Future cross-chain support with Ethereum, Bitcoin, and Polygon
+✅ Buy & sell goods using Pi Network cryptocurrency
+✅ Secure transactions with blockchain integration
+✅ JWT-based user authentication for secure access
+✅ Node.js & Express.js backend with PostgreSQL database
+✅ React.js (TypeScript) frontend for an optimized UI/UX
+✅ Redux Toolkit (planned) for state management
+✅ Cross-chain transactions (Ethereum, Bitcoin, Polygon) - Future expansion
 
 
 ---
 
 Technology Stack
 
-Backend
+Backend (Node.js / Express.js)
 
-Flask – Python-based microframework
+Express.js – Lightweight and scalable backend framework
 
-PostgreSQL – Relational database
+PostgreSQL – Relational database for scalable data storage
 
-Flask-JWT-Extended – Secure user authentication
+JWT (jsonwebtoken) – Secure authentication system
 
-Docker – Containerized environment
+Multer & Cloudinary – Image uploads & cloud storage
 
-Gunicorn – Production-ready WSGI server
+Docker – Containerized development & production
+
+PM2 – Process management for production
 
 
-Frontend
+Frontend (React.js with TypeScript)
 
-React.js – Web-based user interface
+React.js (TypeScript) – Type-safe and scalable UI
 
-React Native (Future) – Mobile-first design
+Redux Toolkit (Future) – State management for better UX
 
-Redux (Future) – State management
+Material-UI – Modern component-based UI framework
 
 
 Blockchain & Web3
 
-Pi Network SDK – Pi-based payments
+Pi Network SDK – Pi-based cryptocurrency payments
 
-Ethereum, Bitcoin, and Polygon (Planned) – Cross-chain transactions
+Ethereum, Bitcoin, Polygon (Future) – Multi-chain transaction support
 
 
 
@@ -84,17 +82,15 @@ Ethereum, Bitcoin, and Polygon (Planned) – Cross-chain transactions
 
 Getting Started
 
-Follow these steps to set up the Palace of Goods project on your local machine.
-
 Prerequisites
 
-Python 3.8+
+Ensure you have the following installed on your system:
 
-Node.js 16+ and npm/yarn
+Node.js (16+) & npm/yarn
 
 PostgreSQL
 
-Docker (Optional)
+Docker (Optional for deployment)
 
 
 
@@ -102,55 +98,55 @@ Docker (Optional)
 
 Installation
 
-1. Clone the Repository
+1️⃣ Clone the Repository
 
 git clone https://github.com/your-username/palace-of-goods.git
 cd palace-of-goods
 
-2. Backend Setup (Flask API)
+2️⃣ Backend Setup (Node.js + Express API)
 
-Create a Virtual Environment & Install Dependencies
+Install Dependencies
 
-python -m venv venv
-source venv/bin/activate  # macOS/Linux
-venv\Scripts\activate     # Windows
-
-pip install -r backend/requirements.txt
+cd server
+npm install
 
 Run Migrations & Start the Server
 
-python backend/manage.py db upgrade
-python backend/app.py
+npm run migrate  # Apply database migrations
+npm run dev      # Start development server
 
-Backend runs at http://127.0.0.1:5000.
+Backend will be running at http://127.0.0.1:5000.
 
 
 ---
 
-3. Frontend Setup (React)
+3️⃣ Frontend Setup (React with TypeScript)
 
 Install Dependencies
 
-cd frontend
+cd client
 npm install
 
 Start the Development Server
 
 npm start
 
-Frontend runs at http://localhost:3000.
+Frontend will be running at http://localhost:3000.
 
 
 ---
 
 Environment Variables
 
-Create a .env file in the backend directory and add:
+Create a .env file in the server directory and add:
 
+PORT=5000
 DATABASE_URL=postgresql://username:password@localhost:5432/palace_of_goods
-SECRET_KEY=your_secret_key
-JWT_SECRET_KEY=your_jwt_secret
+JWT_SECRET=your_jwt_secret
 PI_NETWORK_API_KEY=your_pi_api_key
+CLOUDINARY_CLOUD_NAME=your_cloudinary_name
+CLOUDINARY_API_KEY=your_cloudinary_api_key
+CLOUDINARY_API_SECRET=your_cloudinary_api_secret
 
 
 ---
@@ -168,7 +164,78 @@ API Endpoints
 
 Authentication
 
+POST /api/users/signup – Register new users
+
+POST /api/users/login – Login and receive JWT
+
+GET /api/users/profile – Get user details (Requires JWT)
+
+
 Products
+
+GET /api/products – Fetch all products
+
+POST /api/products – Add new product (Admin only)
+
+PUT /api/products/:id – Edit product details (Admin only)
+
+DELETE /api/products/:id – Remove product (Admin only)
+
+
+Payments (Pi Network)
+
+POST /api/payment/create – Initiate a Pi Network payment
+
+POST /api/payment/verify – Confirm and validate Pi payment
+
+
+
+---
+
+Docker Setup
+
+1️⃣ Build and Run the Server in Docker
+
+docker build -t palace-of-goods-server .
+docker run -d -p 5000:5000 --env-file .env palace-of-goods-server
+
+2️⃣ Use Docker Compose for Backend & Database
+
+Create a docker-compose.yml file in the root directory:
+
+version: "3.8"
+
+services:
+  backend:
+    build: ./server
+    ports:
+      - "5000:5000"
+    env_file:
+      - ./server/.env
+    depends_on:
+      - postgres
+
+  postgres:
+    image: postgres:14
+    container_name: palace-of-goods-db
+    restart: always
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: secret
+      POSTGRES_DB: palace_of_goods
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+volumes:
+  pgdata:
+
+Start the Docker Containers
+
+docker-compose up -d
+
+✅ Now, both the backend and database run inside Docker!
 
 
 ---
@@ -178,8 +245,8 @@ Future Roadmap
 🔹 React Native Mobile App for Android & iOS
 🔹 Cross-chain Bridge with Ethereum & Bitcoin
 🔹 NFT Marketplace for digital goods
-🔹 Advanced Search & Filters for better discovery
 🔹 Automated dispute resolution system
+🔹 Advanced search & filters for better product discovery
 
 
 ---
@@ -188,21 +255,20 @@ Contributing
 
 We welcome contributions! Follow these steps:
 
-1. Fork the repo
+1️⃣ Fork the repo
+2️⃣ Create a feature branch:
 
+git checkout -b feature-name
 
-2. Create a new feature branch: git checkout -b feature-name
+3️⃣ Commit changes:
 
+git commit -m "Added new feature"
 
-3. Commit changes: git commit -m "Added new feature"
+4️⃣ Push to your branch:
 
+git push origin feature-name
 
-4. Push to your branch: git push origin feature-name
-
-
-5. Submit a pull request
-
-
+5️⃣ Submit a pull request
 
 
 ---
