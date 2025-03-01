@@ -68,3 +68,11 @@ module.exports = {
   deleteUser,
 };
 
+export const loginUser = async (req: Request, res: Response) => {
+  const user = await User.findOne({ where: { email: req.body.email } });
+  if (!user || !(await bcrypt.compare(req.body.password, user.password))) {
+    return res.status(400).json({ error: "Invalid credentials" });
+  }
+  const token = jwt.sign({ id: user.id, role: user.role }, process.env.JWT_SECRET as string);
+  res.json({ token, user });
+};
