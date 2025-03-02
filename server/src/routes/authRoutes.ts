@@ -15,14 +15,20 @@ const SECRET_KEY = process.env.JWT_SECRET || "your_secret_key";
 router.post("/signup", async (req: Request, res: Response) => {
   try {
     const { username, email, password } = req.body;
+    if (!username || !email || !password) {
+      return res.status(400).json({ success: false, error: "All fields are required" });
+    }
+
     const existingUser = await findUserByEmail(email);
+    if (existingUser) return res.status(400).json({ success: false, error: "Email already in use" });
 
-    if (existingUser) return res.status(400).json({ error: "Email already in use" });
+    const hashedPassword = await bcrypt.hash(password, 12);
+    const newUser = await createUser({ username, email, password: hashedPassword });
 
-    const newUser = await createUser({ username, email, password });
-    res.status(201).json({ success: true, message: "User registered", data: newUser });
+    res.status(201).json({ success: true, message: "User registered", data: { id: newUser.id, username: newUser.username } });
   } catch (error) {
-    res.status(500).json({ error: "Error registering user" });
+    console.error("❌ Signup error:", error.message);
+    res.status(500).json({ success: false, error: "Error registering user" });
   }
 });
 
@@ -34,26 +40,22 @@ router.post("/signup", async (req: Request, res: Response) => {
 router.post("/login", async (req: Request, res: Response) => {
   try {
     const { email, password } = req.body;
-    const user = await findUserByEmail(email);
-
-    if (!user || !(await bcrypt.compare(password, user.password))) {
-      return res.status(400).json({ error: "Invalid credentials" });
+    if (!email || !password) {
+      return res.status(400).json({ success: false, error: "All fields are required" });
     }
 
-    const token = jwt.sign({ userId: user.id }, SECRET_KEY, { expiresIn: "1h" });
-    res.json({ success: true, token, userId: user.id });
-  } catch (error) {
-    res.status(500).json({ error: "Error logging in" });
-  }
-});
+    const user = await findUserByEmail(email);
+    if (!user || !(await bcrypt.compare(password, user.password))) {
+      return res.status(400).json({ success: false, error: "Invalid credentials" });
+    }
 
-/**
- * @route   GET /api/auth/session
- * @desc    Verify user session
- * @access  Private
- */
-router.get("/session", authenticateJWT, async (req: Request, res: Response) => {
-  res.json({ success: true, userId: req.user?.id });
+    const token = jwt.sign({ userId: user.id, role: user.role }, SECRET_KEY, { expiresIn: "3h" });
+
+    res.json({ success: true, token, userId: user.id, username: user.username });
+  } catch (error) {
+    console.error("❌ Login error:", error.message);
+    res.status(500).json({ success: false, error: "Error logging in" });
+  }
 });
 
 export default router;
