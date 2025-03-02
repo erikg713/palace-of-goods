@@ -97,4 +97,3 @@ export class DatabaseService {
 
 // Singleton instance export
 export const database = DatabaseService.getInstance();
-
