@@ -16,13 +16,19 @@ router.post("/:productId", authenticateJWT, async (req: Request, res: Response) 
     const productId = req.params.productId;
 
     if (!rating || rating < 1 || rating > 5) {
-      return res.status(400).json({ error: "Rating must be between 1 and 5" });
+      return res.status(400).json({ success: false, error: "Rating must be between 1 and 5" });
+    }
+
+    const existingReview = await Review.findOne({ productId, userId });
+    if (existingReview) {
+      return res.status(400).json({ success: false, error: "You have already reviewed this product" });
     }
 
     const newReview = await Review.create({ productId, userId, rating, comment });
     res.status(201).json({ success: true, message: "Review added", data: newReview });
   } catch (error) {
-    res.status(500).json({ error: "Error adding review" });
+    console.error("❌ Error adding review:", error.message);
+    res.status(500).json({ success: false, error: "Error adding review" });
   }
 });
 
