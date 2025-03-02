@@ -2,7 +2,34 @@ import React, { useState } from "react";
 import { Pi } from "pi-sdk";
 import { placeOrder } from "../services/orderService";
 import { useCartStore } from "../state/cartStore";
-
+const handlePiPayment = async () => {
+  setLoading(true);
+  try {
+    const payment = await Pi.createPayment({
+      amount,
+      memo,
+      metadata: { type: "purchase" },
+      callbacks: {
+        onCompleted: async (paymentId) => {
+          console.log("Payment successful:", paymentId);
+          alert("Payment successful!");
+          await placeOrder(cart, amount, paymentId, token || "");
+          clearCart();
+          onSuccess();
+        },
+        onError: (error) => {
+          console.error("Payment failed:", error);
+          alert("Payment failed. Please try again.");
+        }
+      },
+    });
+    return payment;
+  } catch (error) {
+    alert("An error occurred during payment.");
+    console.error(error);
+  }
+  setLoading(false);
+};
 const PiPayment: React.FC<{ amount: number; memo: string; onSuccess: () => void }> = ({ amount, memo, onSuccess }) => {
   const [loading, setLoading] = useState(false);
   const { cart, clearCart } = useCartStore();
