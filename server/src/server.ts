@@ -7,7 +7,16 @@ import authRoutes from "./routes/auth";
 import productRoutes from "./routes/products";
 import orderRoutes from "./routes/orders";
 import { authenticateJWT } from "./middleware/auth";
+import { config } from "./config";
+import { connectDB } from "./config/db";
+import { logger } from "./config/logger";
 
+const app = express();
+connectDB();
+
+app.listen(config.port, () => {
+  logger.info(`🚀 Palace-of-Goods server running on port ${config.port}`);
+});
 dotenv.config();
 
 const app = express();
