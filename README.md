@@ -109,6 +109,7 @@ Install Dependencies
 
 cd server
 npm install
+npm install node-cron
 npm install pi-sdk web3 dotenv
 npx terser js/main.js -o js/main.min.js --compress --mangle
 npx clean-css -o css/styles.min.css css/styles.css
@@ -131,7 +132,7 @@ cd client
 npm install
 npm install pi-sdk
 Start the Development Server
-
+node sitemap.ts
 npm start
 
 Frontend will be running at http://localhost:3000.
