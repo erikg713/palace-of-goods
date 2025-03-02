@@ -13,7 +13,13 @@ import PiPayment from "./components/PiPayment";
 // ✅ Protected Route Wrapper
 const ProtectedRoute = ({ children }: { children: JSX.Element }) => {
   const { user } = useContext(AuthContext);
-  return user ? children : <Navigate to="/login" />;
+
+  if (user === undefined) {
+    // Prevents rendering issues before auth state is determined
+    return <div>Loading...</div>;
+  }
+
+  return user ? children : <Navigate to="/login" replace />;
 };
 
 const App = () => {
@@ -21,11 +27,11 @@ const App = () => {
     <AuthProvider>
       <Router>
         <Navbar />
-        <div>
+        <main>
           <h1>Pi Network DApp</h1>
           <PiAuth />
           <PiPayment />
-        </div>
+        </main>
         <Routes>
           {/* ✅ Public Routes */}
           <Route path="/" element={<Home />} />
@@ -49,6 +55,8 @@ const App = () => {
               </ProtectedRoute>
             }
           />
+          {/* ✅ Catch-All Route */}
+          <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </Router>
     </AuthProvider>
