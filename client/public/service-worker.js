@@ -1,33 +1,44 @@
-const CACHE_NAME = "palace-of-goods-cache-v1";
-const urlsToCache = ["/", "/index.html", "/css/styles.css", "/js/main.js"];
+const CACHE_NAME = 'palace-of-goods-v1';
+const urlsToCache: string[] = [
+  '/',
+  '/index.html',
+  '/favicon.ico',
+  '/manifest.json',
+  '/static/js/bundle.js',
+  '/static/css/main.css',
+];
 
-self.addEventListener("install", (event) => {
-    event.waitUntil(
-        caches.open(CACHE_NAME).then((cache) => {
-            return cache.addAll(urlsToCache);
-        })
-    );
+// Install the service worker and cache resources
+self.addEventListener('install', (event: any) => {
+  event.waitUntil(
+    caches.open(CACHE_NAME).then((cache) => {
+      console.log('Service Worker: Caching files');
+      return cache.addAll(urlsToCache);
+    })
+  );
 });
 
-self.addEventListener("fetch", (event) => {
-    event.respondWith(
-        caches.match(event.request).then((response) => {
-            return response || fetch(event.request);
-        })
-    );
+// Fetch requests - Cache-first strategy with network fallback
+self.addEventListener('fetch', (event: any) => {
+  event.respondWith(
+    caches.match(event.request).then((cachedResponse) => {
+      return cachedResponse || fetch(event.request);
+    })
+  );
 });
 
-self.addEventListener("activate", (event) => {
-    const cacheWhitelist = [CACHE_NAME];
-    event.waitUntil(
-        caches.keys().then((cacheNames) => {
-            return Promise.all(
-                cacheNames.map((cache) => {
-                    if (!cacheWhitelist.includes(cache)) {
-                        return caches.delete(cache);
-                    }
-                })
-            );
+// Activate event - Clean old caches
+self.addEventListener('activate', (event: any) => {
+  event.waitUntil(
+    caches.keys().then((cacheNames) => {
+      return Promise.all(
+        cacheNames.map((cache) => {
+          if (cache !== CACHE_NAME) {
+            console.log('Service Worker: Deleting old cache', cache);
+            return caches.delete(cache);
+          }
         })
-    );
+      );
+    })
+  );
 });
