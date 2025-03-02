@@ -145,3 +145,9 @@ router.post("/cancel/:id", authenticateJWT, async (req: Request, res: Response) 
 });
 
 export default router;
+if (order.transactionId) {
+  const isVerified = await verifyPiTransaction(order.transactionId);
+  if (!isVerified) {
+    return res.status(400).json({ error: "Pi transaction verification failed" });
+  }
+}
