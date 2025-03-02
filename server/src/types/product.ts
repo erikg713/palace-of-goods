@@ -36,3 +36,14 @@ router.delete("/:id", authenticateJWT, async (req: Request, res: Response) => {
 });
 
 export default router;
+export interface Product {
+  id: string;
+  name: string;
+  description: string;
+  price: number;
+  category: string;
+  stock: number;
+  imageUrl?: string;
+  createdAt: Date;
+  updatedAt: Date;
+}
