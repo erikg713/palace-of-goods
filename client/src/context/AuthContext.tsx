@@ -1,6 +1,26 @@
 import { createContext, useState, useEffect } from "react";
 import { checkSession } from "../api";
+import React, { createContext, useState, ReactNode } from "react";
 
+interface AuthContextType {
+  user: any;
+  setUser: (user: any) => void;
+}
+
+export const AuthContext = createContext<AuthContextType>({
+  user: null,
+  setUser: () => {},
+});
+
+export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
+  const [user, setUser] = useState(null);
+
+  return (
+    <AuthContext.Provider value={{ user, setUser }}>
+      {children}
+    </AuthContext.Provider>
+  );
+};
 export const AuthContext = createContext(null);
 
 export const AuthProvider = ({ children }) => {
