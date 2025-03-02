@@ -1,3 +1,5 @@
+import orderRoutes from "./routes/orders";
+app.use("/api/orders", orderRoutes);
 import express from "express";
 import cors from "cors";
 import helmet from "helmet";
