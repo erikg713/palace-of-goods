@@ -1,73 +1,32 @@
-import express from "express";
-import fs from "fs";
-import moment from "moment";
+import { createWriteStream } from 'fs';
+import { SitemapStream, streamToPromise } from 'sitemap';
 
-const app = express();
-const PORT = process.env.PORT || 3000;
+// Define your website base URL
+const siteUrl = 'https://yourdomain.com'; // Replace with your actual domain
 
-// Simulated database (Replace with your actual database query)
+// Define your static pages
 const pages = [
-  { loc: "https://palaceofgoods.com/", priority: "1.0", changefreq: "daily" },
-  { loc: "https://palaceofgoods.com/shop", priority: "0.9", changefreq: "weekly" },
-  { loc: "https://palaceofgoods.com/about", priority: "0.7", changefreq: "monthly" },
+  { url: '/', changefreq: 'daily', priority: 1.0 },
+  { url: '/about', changefreq: 'monthly', priority: 0.8 },
+  { url: '/contact', changefreq: 'monthly', priority: 0.7 },
+  { url: '/marketplace', changefreq: 'daily', priority: 0.9 }, // Example
 ];
 
-// Function to generate XML sitemap
-const generateSitemap = () => {
-  const sitemapHeader = `<?xml version="1.0" encoding="UTF-8"?>
-  <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">`;
+// Create a sitemap stream
+const sitemapStream = new SitemapStream({ hostname: siteUrl });
 
-  const sitemapBody = pages
-    .map(
-      (page) => `
-    <url>
-      <loc>${page.loc}</loc>
-      <lastmod>${moment().format("YYYY-MM-DD")}</lastmod>
-      <changefreq>${page.changefreq}</changefreq>
-      <priority>${page.priority}</priority>
-    </url>`
-    )
-    .join("");
+(async () => {
+  // Write sitemap to a file
+  const writeStream = createWriteStream('./public/sitemap.xml');
+  sitemapStream.pipe(writeStream);
 
-  const sitemapFooter = `</urlset>`;
+  for (const page of pages) {
+    sitemapStream.write(page);
+  }
 
-  const sitemapXML = `${sitemapHeader}${sitemapBody}${sitemapFooter}`;
+  sitemapStream.end();
 
-  fs.writeFileSync("public/sitemap.xml", sitemapXML);
-  console.log("✅ Sitemap updated successfully!");
-};
+  await streamToPromise(sitemapStream);
 
-// 📌 Generate sitemap on server start
-generateSitemap();
-
-// 🛠 Serve the sitemap file dynamically
-app.get("/sitemap.xml", (req, res) => {
-  res.sendFile(__dirname + "/public/sitemap.xml");
-});
-
-app.listen(PORT, () => console.log(`🌍 Sitemap server running at http://localhost:${PORT}/sitemap.xml`));
-import mongoose from "mongoose";
-import Product from "./models/Product"; // Import your Product model
-
-const generateDynamicSitemap = async () => {
-  await mongoose.connect("mongodb://your-mongo-url");
-
-  const products = await Product.find().select("slug updatedAt");
-
-  const productPages = products.map((product) => ({
-    loc: `https://palaceofgoods.com/product/${product.slug}`,
-    priority: "0.8",
-    changefreq: "weekly",
-    lastmod: moment(product.updatedAt).format("YYYY-MM-DD"),
-  }));
-
-  const allPages = [...staticPages, ...productPages]; // Merge static + dynamic pages
-
-  generateSitemap(allPages);
-};
-import cron from "node-cron";
-
-cron.schedule("0 0 * * *", () => {
-  console.log("🔄 Regenerating sitemap...");
-  generateSitemap();
-});
+  console.log('Sitemap successfully generated!');
+})();
