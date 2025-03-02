@@ -61,3 +61,42 @@ export const AuthProvider = ({ children }) => {
 
   return <AuthContext.Provider value={{ user, setUser, logout }}>{children}</AuthContext.Provider>;
 };
+import { createContext, useState, useContext } from "react";
+import { authenticatePiUser } from "../utils/pi";
+import { PiUser } from "../types/pi";
+
+interface AuthContextType {
+  user: PiUser | null;
+  login: () => Promise<void>;
+  logout: () => void;
+  isAuthenticated: boolean;
+}
+
+const AuthContext = createContext<AuthContextType | undefined>(undefined);
+
+export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
+  const [user, setUser] = useState<PiUser | null>(null);
+
+  const login = async () => {
+    const authenticatedUser = await authenticatePiUser();
+    if (authenticatedUser) setUser(authenticatedUser);
+  };
+
+  const logout = () => {
+    setUser(null);
+  };
+
+  return (
+    <AuthContext.Provider value={{ user, login, logout, isAuthenticated: !!user }}>
+      {children}
+    </AuthContext.Provider>
+  );
+};
+
+export const useAuth = (): AuthContextType => {
+  const context = useContext(AuthContext);
+  if (!context) {
+    throw new Error("useAuth must be used within an AuthProvider");
+  }
+  return context;
+};
