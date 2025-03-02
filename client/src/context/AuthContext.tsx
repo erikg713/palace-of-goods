@@ -145,3 +145,13 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     </AuthContext.Provider>
   );
 };
+export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
+  const [user, setUser] = useState(null);
+
+  const isAdmin = user?.role === "admin" || user?.role === "seller";
+  return (
+    <AuthContext.Provider value={{ user, setUser, isAdmin }}>
+      {children}
+    </AuthContext.Provider>
+  );
+};
