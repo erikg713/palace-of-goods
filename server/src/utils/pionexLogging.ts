@@ -1,7 +1,32 @@
 import axios from "axios";
 import dotenv from "dotenv";
 import Web3 from "web3";
+import axios from "axios";
+import dotenv from "dotenv";
 
+dotenv.config();
+
+const PIONEX_API_URL = "https://api.pionex.us/api/v1";
+
+export const cancelPionexTrade = async (tradeId: string) => {
+  try {
+    // Cancel order on Pionex.US
+    const response = await axios.delete(`${PIONEX_API_URL}/orders/${tradeId}`, {
+      headers: { Authorization: `Bearer ${process.env.PIONEX_API_KEY}` },
+    });
+
+    if (response.data.success) {
+      console.log(`✅ Trade Canceled: ${tradeId}`);
+      return true;
+    } else {
+      console.log(`❌ Failed to Cancel Trade: ${tradeId}`);
+      return false;
+    }
+  } catch (error) {
+    console.error("⚠️ Error canceling trade:", error);
+    return false;
+  }
+};
 dotenv.config();
 const web3 = new Web3("https://rpc-mumbai.maticvigil.com");
 
