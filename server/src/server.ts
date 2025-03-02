@@ -10,7 +10,37 @@ import { authenticateJWT } from "./middleware/auth";
 import { config } from "./config";
 import { connectDB } from "./config/db";
 import { logger } from "./config/logger";
+import express from "express";
+import { config } from "./config";
+import { connectDB } from "./config/db";
+import { logger } from "./config/logger";
+import { createPiPayment, verifyPiPayment } from "./config/piPayments";
 
+const app = express();
+connectDB();
+
+app.post("/pay", async (req, res) => {
+  try {
+    const { amount, userUid, metadata } = req.body;
+    const payment = await createPiPayment(amount, userUid, metadata);
+    res.json(payment);
+  } catch (error) {
+    res.status(500).json({ error: "Payment Failed" });
+  }
+});
+
+app.get("/verify/:paymentId", async (req, res) => {
+  try {
+    const paymentStatus = await verifyPiPayment(req.params.paymentId);
+    res.json(paymentStatus);
+  } catch (error) {
+    res.status(500).json({ error: "Payment Verification Failed" });
+  }
+});
+
+app.listen(config.port, () => {
+  logger.info(`🚀 Palace-of-Goods Server Running on Port ${config.port}`);
+});
 const app = express();
 connectDB();
 
