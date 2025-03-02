@@ -15,7 +15,7 @@ const ProtectedRoute = ({ children }: { children: JSX.Element }) => {
   const { user } = useContext(AuthContext);
 
   if (user === undefined) {
-    // Prevents rendering issues before auth state is determined
+    // Prevents redirecting before the auth state is determined
     return <div>Loading...</div>;
   }
 
@@ -55,6 +55,7 @@ const App = () => {
               </ProtectedRoute>
             }
           />
+
           {/* ✅ Catch-All Route */}
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
