@@ -3,7 +3,18 @@ import { fetchProducts } from "../services/productService";
 
 const Marketplace = () => {
   const [products, setProducts] = useState([]);
-
+useEffect(() => {
+  const loadProducts = async () => {
+    try {
+      const data = await fetchProducts();
+      setProducts(data);
+    } catch (error) {
+      console.error("Error fetching products:", error);
+      setProducts([]);
+    }
+  };
+  loadProducts();
+}, []);
   useEffect(() => {
     const loadProducts = async () => {
       const data = await fetchProducts();
