@@ -109,7 +109,7 @@ Install Dependencies
 
 cd server
 npm install
-
+npm install pi-sdk web3 dotenv
 Run Migrations & Start the Server
 
 npm run migrate  # Apply database migrations
