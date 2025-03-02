@@ -5,15 +5,25 @@ import dotenv from "dotenv";
 dotenv.config();
 
 const router = express.Router();
+
+if (!process.env.PI_API_KEY || !process.env.PI_SECRET_KEY) {
+  console.error("❌ Pi Network API keys missing! Payments won't work.");
+  process.exit(1);
+}
+
 const pi = new PiNetwork({
-  apiKey: process.env.PI_API_KEY,
-  secretKey: process.env.PI_SECRET_KEY,
+  apiKey: process.env.PI_API_KEY!,
+  secretKey: process.env.PI_SECRET_KEY!,
 });
 
-// Create a payment request
+// 🔹 Create a Pi Payment Request
 router.post("/create", async (req, res) => {
   try {
     const { amount, userId } = req.body;
+
+    if (!amount || !userId) {
+      return res.status(400).json({ error: "Missing required fields: amount or userId" });
+    }
 
     const payment = await pi.createPayment({
       amount,
@@ -21,25 +31,32 @@ router.post("/create", async (req, res) => {
       metadata: { userId },
     });
 
-    res.json(payment);
-  } catch (error) {
-    res.status(500).json({ error: "Payment error" });
+    res.json({ success: true, message: "Payment initiated", data: payment });
+  } catch (error: any) {
+    console.error("❌ Pi Payment Creation Error:", error.message);
+    res.status(500).json({ success: false, error: "Failed to create payment" });
   }
 });
 
-// Verify Payment
+// 🔹 Verify a Pi Payment
 router.post("/verify", async (req, res) => {
   try {
     const { paymentId } = req.body;
+
+    if (!paymentId) {
+      return res.status(400).json({ error: "Missing required field: paymentId" });
+    }
+
     const payment = await pi.verifyPayment(paymentId);
 
     if (payment.status === "completed") {
-      res.json({ message: "Payment successful" });
+      return res.json({ success: true, message: "Payment successful", data: payment });
     } else {
-      res.status(400).json({ error: "Payment not completed" });
+      return res.status(400).json({ success: false, error: "Payment not completed", data: payment });
     }
-  } catch (error) {
-    res.status(500).json({ error: "Verification error" });
+  } catch (error: any) {
+    console.error("❌ Pi Payment Verification Error:", error.message);
+    res.status(500).json({ success: false, error: "Failed to verify payment" });
   }
 });
 
