@@ -120,3 +120,21 @@ const pool = new Pool({
 });
 
 export default pool;
+import mongoose from "mongoose";
+import { config } from "./index";
+
+const connectDB = async (): Promise<void> => {
+  try {
+    await mongoose.connect(config.dbURL, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+      serverSelectionTimeoutMS: 5000, // Fast fail on bad connection
+    } as mongoose.ConnectOptions);
+    console.log("✅ Connected to Palace-of-Goods Database");
+  } catch (error) {
+    console.error("❌ Database Connection Failed, retrying in 5s...", error);
+    setTimeout(connectDB, 5000);
+  }
+};
+
+export { connectDB };
