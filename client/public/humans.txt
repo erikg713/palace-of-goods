@@ -1,0 +1,7 @@
+/* Team */
+Developer: Palace of Goods Dev Team
+Website: https://palaceofgoods.com
+Contact: devteam@palaceofgoods.com
+
+/* Thanks */
+Inspired by the open-source community.
