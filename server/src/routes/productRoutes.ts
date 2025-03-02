@@ -1,46 +1,3 @@
-import express, { Router, Request, Response } from 'express';
-import Product from '../models/Product';
-import express from "express";
-import pool from "../utils/db";
-import { authMiddleware } from "../middleware/auth";
-
-const router = express.Router();
-
-router.get("/", authMiddleware, async (req, res) => {
-  const result = await pool.query("SELECT * FROM products");
-  res.json(result.rows);
-});
-
-export default router;
-const router: Router = express.Router();
-
-router.get('/', async (req: Request, res: Response) => {
-    try {
-        const products = await Product.find();
-        res.json(products);
-    } catch (err) {
-        res.status(500).json({ message: err });
-    }
-});
-
-// ... other routes (POST, PUT, DELETE)
-
-export default router;
-import express from "express";
-import pool from "../utils/db";
-
-const router = express.Router();
-
-router.get("/", async (req, res) => {
-  try {
-    const result = await pool.query("SELECT * FROM products");
-    res.json(result.rows);
-  } catch (error) {
-    res.status(500).json({ error: "Error fetching products" });
-  }
-});
-
-export default router;
 import express, { Request, Response } from "express";
 import Product from "../models/Product";
 import { authenticateJWT } from "../middleware/auth";
@@ -52,12 +9,18 @@ const router = express.Router();
 /**
  * @route   POST /api/products
  * @desc    Create a new product (Authenticated Users Only)
- * @access  Private
+ * @access  Private (Only Sellers)
  */
 router.post("/", authenticateJWT, async (req: AuthRequest, res: Response) => {
   try {
-    const { name, description, price, image, category } = req.body;
+    const { name, description, price, image, category, stock } = req.body;
+
     if (!req.user) return res.status(401).json({ error: "Unauthorized" });
+
+    // Only allow sellers to create products
+    if (req.user.role !== "seller") {
+      return res.status(403).json({ error: "Only sellers can create products" });
+    }
 
     const newProduct = await Product.create({
       name,
@@ -65,11 +28,13 @@ router.post("/", authenticateJWT, async (req: AuthRequest, res: Response) => {
       price,
       image,
       category,
-      sellerId: req.user.id, // Ensure `user` exists in `req`
+      stock,
+      sellerId: req.user.id,
     });
 
-    res.status(201).json(newProduct);
-  } catch (error) {
+    res.status(201).json({ success: true, message: "Product created", data: newProduct });
+  } catch (error: any) {
+    console.error("❌ Error creating product:", error.message);
     res.status(500).json({ error: "Error creating product", details: error.message });
   }
 });
@@ -82,8 +47,9 @@ router.post("/", authenticateJWT, async (req: AuthRequest, res: Response) => {
 router.get("/", async (_req: Request, res: Response) => {
   try {
     const products: ProductType[] = await Product.find();
-    res.json(products);
-  } catch (error) {
+    res.json({ success: true, data: products });
+  } catch (error: any) {
+    console.error("❌ Error fetching products:", error.message);
     res.status(500).json({ error: "Error fetching products", details: error.message });
   }
 });
@@ -98,8 +64,9 @@ router.get("/:id", async (req: Request, res: Response) => {
     const product = await Product.findById(req.params.id);
     if (!product) return res.status(404).json({ error: "Product not found" });
 
-    res.json(product);
-  } catch (error) {
+    res.json({ success: true, data: product });
+  } catch (error: any) {
+    console.error("❌ Error fetching product:", error.message);
     res.status(500).json({ error: "Error fetching product", details: error.message });
   }
 });
@@ -122,8 +89,9 @@ router.delete("/:id", authenticateJWT, async (req: AuthRequest, res: Response) =
     }
 
     await product.deleteOne();
-    res.json({ message: "Product deleted successfully" });
-  } catch (error) {
+    res.json({ success: true, message: "Product deleted successfully" });
+  } catch (error: any) {
+    console.error("❌ Error deleting product:", error.message);
     res.status(500).json({ error: "Error deleting product", details: error.message });
   }
 });
