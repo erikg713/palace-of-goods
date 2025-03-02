@@ -10,16 +10,10 @@ import Navbar from "./components/Navbar";
 import PiAuth from "./components/PiAuth";
 import PiPayment from "./components/PiPayment";
 
-// ✅ Protected Route Wrapper
+// Protected route wrapper for authenticated pages
 const ProtectedRoute = ({ children }: { children: JSX.Element }) => {
   const { user } = useContext(AuthContext);
-
-  if (user === undefined) {
-    // Prevents redirecting before the auth state is determined
-    return <div>Loading...</div>;
-  }
-
-  return user ? children : <Navigate to="/login" replace />;
+  return user ? children : <Navigate to="/login" />;
 };
 
 const App = () => {
@@ -27,37 +21,17 @@ const App = () => {
     <AuthProvider>
       <Router>
         <Navbar />
-        <main>
+        <div>
           <h1>Pi Network DApp</h1>
           <PiAuth />
           <PiPayment />
-        </main>
+        </div>
         <Routes>
-          {/* ✅ Public Routes */}
           <Route path="/" element={<Home />} />
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
-
-          {/* ✅ Protected Routes */}
-          <Route
-            path="/checkout"
-            element={
-              <ProtectedRoute>
-                <Checkout />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/dashboard"
-            element={
-              <ProtectedRoute>
-                <Dashboard />
-              </ProtectedRoute>
-            }
-          />
-
-          {/* ✅ Catch-All Route */}
-          <Route path="*" element={<Navigate to="/" replace />} />
+          <Route path="/checkout" element={<ProtectedRoute><Checkout /></ProtectedRoute>} />
+          <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
         </Routes>
       </Router>
     </AuthProvider>
