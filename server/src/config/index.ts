@@ -1,15 +1,18 @@
 import dotenv from "dotenv";
 import path from "path";
 
-// Load environment variables from .env file
 dotenv.config({ path: path.resolve(__dirname, "../../.env") });
 
 export const config = {
   appName: "Palace-of-Goods",
-  port: process.env.PORT || 5000,
-  databaseURL: process.env.DATABASE_URL || "mongodb://localhost:27017/palaceofgoods",
-  jwtSecret: process.env.JWT_SECRET || "super_secret_key",
+  env: process.env.NODE_ENV || "development",
+  port: parseInt(process.env.PORT || "5000", 10),
+  dbURL: process.env.DATABASE_URL || "mongodb://127.0.0.1:27017/palaceofgoods",
+  jwtSecret: process.env.JWT_SECRET || "ultra_secure_secret",
   apiBaseURL: process.env.API_BASE_URL || "http://localhost:5000/api",
-  nodeEnv: process.env.NODE_ENV || "development",
-  stripeSecretKey: process.env.STRIPE_SECRET_KEY || "",
+  piApiKey: process.env.PI_API_KEY || "", // Pi Network API Key
+  piAppId: process.env.PI_APP_ID || "",   // Pi App ID
+  logLevel: process.env.LOG_LEVEL || "info",
 };
+
+console.log(`⚙️  Loaded config for ${config.appName} in ${config.env} mode`);
