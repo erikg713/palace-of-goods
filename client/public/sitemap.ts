@@ -65,3 +65,9 @@ const generateDynamicSitemap = async () => {
 
   generateSitemap(allPages);
 };
+import cron from "node-cron";
+
+cron.schedule("0 0 * * *", () => {
+  console.log("🔄 Regenerating sitemap...");
+  generateSitemap();
+});
