@@ -1,45 +1,16 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
-import { AuthContext } from "./context/AuthContext";
+import { useContext } from "react";
+import { AuthProvider, AuthContext } from "./context/AuthContext";
 import Home from "./pages/Home";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import Dashboard from "./pages/Dashboard";
 import Checkout from "./pages/Checkout";
 import Navbar from "./components/Navbar";
-import { useContext } from "react";
-import { AuthProvider } from "./context/AuthContext";
-import PiAuth from "./components/PiAuth";
-import PiPayment from "./components/PiPayment";
-import { AuthProvider } from "./context/AuthContext";
 import PiAuth from "./components/PiAuth";
 import PiPayment from "./components/PiPayment";
 
-const App = () => {
-  return (
-    <AuthProvider>
-      <div>
-        <h1>Pi Network DApp</h1>
-        <PiAuth />
-        <PiPayment />
-      </div>
-    </AuthProvider>
-  );
-};
-
-export default App;
-const App = () => {
-  return (
-    <AuthProvider>
-      <div>
-        <h1>Pi Network DApp</h1>
-        <PiAuth />
-        <PiPayment />
-      </div>
-    </AuthProvider>
-  );
-};
-
-export default App;
+// ✅ Protected Route Wrapper
 const ProtectedRoute = ({ children }: { children: JSX.Element }) => {
   const { user } = useContext(AuthContext);
   return user ? children : <Navigate to="/login" />;
@@ -47,16 +18,40 @@ const ProtectedRoute = ({ children }: { children: JSX.Element }) => {
 
 const App = () => {
   return (
-    <Router>
-      <Navbar />
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/signup" element={<Signup />} />
-        <Route path="/checkout" element={<ProtectedRoute><Checkout /></ProtectedRoute>} />
-        <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
-      </Routes>
-    </Router>
+    <AuthProvider>
+      <Router>
+        <Navbar />
+        <div>
+          <h1>Pi Network DApp</h1>
+          <PiAuth />
+          <PiPayment />
+        </div>
+        <Routes>
+          {/* ✅ Public Routes */}
+          <Route path="/" element={<Home />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/signup" element={<Signup />} />
+
+          {/* ✅ Protected Routes */}
+          <Route
+            path="/checkout"
+            element={
+              <ProtectedRoute>
+                <Checkout />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/dashboard"
+            element={
+              <ProtectedRoute>
+                <Dashboard />
+              </ProtectedRoute>
+            }
+          />
+        </Routes>
+      </Router>
+    </AuthProvider>
   );
 };
 
