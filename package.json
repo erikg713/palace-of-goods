@@ -28,3 +28,9 @@
   "author": "Your Name",
   "license": "MIT"
 }
+{
+  "references": [
+    { "path": "./server" },
+    { "path": "./client" }
+  ]
+}
