@@ -10,7 +10,23 @@ import { useContext } from "react";
 import { AuthProvider } from "./context/AuthContext";
 import PiAuth from "./components/PiAuth";
 import PiPayment from "./components/PiPayment";
+import { AuthProvider } from "./context/AuthContext";
+import PiAuth from "./components/PiAuth";
+import PiPayment from "./components/PiPayment";
 
+const App = () => {
+  return (
+    <AuthProvider>
+      <div>
+        <h1>Pi Network DApp</h1>
+        <PiAuth />
+        <PiPayment />
+      </div>
+    </AuthProvider>
+  );
+};
+
+export default App;
 const App = () => {
   return (
     <AuthProvider>
