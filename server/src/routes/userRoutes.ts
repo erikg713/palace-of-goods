@@ -1,152 +1,155 @@
-import express from "express";
+import express, { Request, Response } from "express";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
+import { authenticateJWT } from "../middleware/auth";
+import upload from "../middleware/uploadMiddleware";
 import { createUser, findUserByEmail, User } from "../models/userModel";
+import { pool } from "../utils/db"; // Uncomment this if using PostgreSQL
 
 const router = express.Router();
 const SECRET_KEY = process.env.JWT_SECRET || "your_secret_key";
 
-// Signup
-router.post("/signup", async (req, res) => {
-  const { username, email, password } = req.body;
-  const existingUser = await findUserByEmail(email);
-
-  if (existingUser) return res.status(400).json({ error: "Email already in use" });
-
-  const newUser = await createUser({ username, email, password });
-  res.json({ message: "User registered successfully" });
-});
-
-// Login
-router.post("/login", async (req, res) => {
-  const { email, password } = req.body;
-  const user = await findUserByEmail(email);
-
-  if (!user || !(await bcrypt.compare(password, user.password))) {
-    return res.status(400).json({ error: "Invalid credentials" });
-  }
-
-  const token = jwt.sign({ userId: user.id }, SECRET_KEY, { expiresIn: "1h" });
-  res.json({ token, userId: user.id, username: user.username });
-});
-
-export default router;
-router.get("/profile", authMiddleware, async (req, res) => {
+/**
+ * @route   POST /api/users/signup
+ * @desc    Register a new user
+ * @access  Public
+ */
+router.post("/signup", async (req: Request, res: Response) => {
   try {
-    const userId = req.user.userId;
-    const user = await pool.query("SELECT id, username, email FROM users WHERE id = $1", [userId]);
-    if (!user.rows.length) return res.status(404).json({ error: "User not found" });
-    
-    res.json(user.rows[0]);
-  } catch (error) {
+    const { username, email, password } = req.body;
+    const existingUser = await findUserByEmail(email);
+    if (existingUser) return res.status(400).json({ error: "Email already in use" });
+
+    const newUser = await createUser({ username, email, password });
+    res.status(201).json({ success: true, message: "User registered successfully", data: newUser });
+  } catch (error: any) {
+    console.error("❌ Signup error:", error.message);
+    res.status(500).json({ error: "Error registering user" });
+  }
+});
+
+/**
+ * @route   POST /api/users/login
+ * @desc    Authenticate user and return JWT
+ * @access  Public
+ */
+router.post("/login", async (req: Request, res: Response) => {
+  try {
+    const { email, password } = req.body;
+    const user = await findUserByEmail(email);
+
+    if (!user || !(await bcrypt.compare(password, user.password))) {
+      return res.status(400).json({ error: "Invalid credentials" });
+    }
+
+    const token = jwt.sign({ userId: user.id }, SECRET_KEY, { expiresIn: "1h" });
+
+    res.json({ success: true, token, userId: user.id, username: user.username });
+  } catch (error: any) {
+    console.error("❌ Login error:", error.message);
+    res.status(500).json({ error: "Error logging in" });
+  }
+});
+
+/**
+ * @route   GET /api/users/profile
+ * @desc    Get user profile
+ * @access  Private
+ */
+router.get("/profile", authenticateJWT, async (req: Request, res: Response) => {
+  try {
+    const userId = req.user?.id;
+    if (!userId) return res.status(401).json({ error: "Unauthorized" });
+
+    // Uncomment this if using MongoDB
+    const user = await User.findById(userId).select("username email profilePic");
+
+    // Uncomment this if using PostgreSQL
+    // const user = await pool.query("SELECT id, username, email, profile_pic FROM users WHERE id = $1", [userId]);
+
+    if (!user) return res.status(404).json({ error: "User not found" });
+
+    res.json({ success: true, data: user });
+  } catch (error: any) {
+    console.error("❌ Error fetching profile:", error.message);
     res.status(500).json({ error: "Error fetching user profile" });
   }
 });
-import express from "express";
-import bcrypt from "bcryptjs";
-import { authMiddleware } from "../middleware/auth";
-import pool from "../utils/db";
 
-const router = express.Router();
-
-// Update user info
-router.put("/profile", authMiddleware, async (req, res) => {
+/**
+ * @route   PUT /api/users/profile
+ * @desc    Update user profile (username, email, password)
+ * @access  Private
+ */
+router.put("/profile", authenticateJWT, async (req: Request, res: Response) => {
   try {
-    const userId = req.user.userId;
+    const userId = req.user?.id;
     const { username, email, password } = req.body;
 
-    let updateQuery = "UPDATE users SET";
-    let values = [];
-    let index = 1;
+    if (!userId) return res.status(401).json({ error: "Unauthorized" });
 
-    if (username) {
-      updateQuery += ` username = $${index},`;
-      values.push(username);
-      index++;
-    }
+    let updateData: any = {};
+    if (username) updateData.username = username;
+    if (email) updateData.email = email;
+    if (password) updateData.password = await bcrypt.hash(password, 10);
 
-    if (email) {
-      updateQuery += ` email = $${index},`;
-      values.push(email);
-      index++;
-    }
+    // Uncomment this if using MongoDB
+    const updatedUser = await User.findByIdAndUpdate(userId, updateData, { new: true }).select("username email profilePic");
 
-    if (password) {
-      const hashedPassword = await bcrypt.hash(password, 10);
-      updateQuery += ` password = $${index},`;
-      values.push(hashedPassword);
-      index++;
-    }
+    // Uncomment this if using PostgreSQL
+    // const result = await pool.query("UPDATE users SET username = $1, email = $2 WHERE id = $3 RETURNING id, username, email", [username, email, userId]);
 
-    updateQuery = updateQuery.slice(0, -1); // Remove last comma
-    updateQuery += ` WHERE id = $${index} RETURNING id, username, email`;
-    values.push(userId);
-
-    const result = await pool.query(updateQuery, values);
-    res.json(result.rows[0]);
-  } catch (error) {
+    res.json({ success: true, message: "Profile updated successfully", data: updatedUser });
+  } catch (error: any) {
+    console.error("❌ Error updating profile:", error.message);
     res.status(500).json({ error: "Error updating profile" });
   }
 });
 
-export default router;
-import express from "express";
-import { authMiddleware } from "../middleware/auth";
-import upload from "../middleware/upload";
-import pool from "../utils/db";
-
-const router = express.Router();
-
-// Upload Profile Picture
-router.post("/profile/picture", authMiddleware, upload.single("profilePic"), async (req, res) => {
+/**
+ * @route   POST /api/users/profile/picture
+ * @desc    Upload and update user profile picture
+ * @access  Private
+ */
+router.post("/profile/picture", authenticateJWT, upload.single("profilePic"), async (req: Request, res: Response) => {
   try {
-    const userId = req.user.userId;
-    const profilePicPath = `/uploads/${req.file.filename}`;
+    const userId = req.user?.id;
+    if (!userId) return res.status(401).json({ error: "Unauthorized" });
 
-    await pool.query("UPDATE users SET profile_pic = $1 WHERE id = $2", [profilePicPath, userId]);
+    const profilePicPath = `/uploads/${req.file?.filename}`;
 
-    res.json({ profilePic: profilePicPath });
-  } catch (error) {
+    // Uncomment this if using MongoDB
+    await User.findByIdAndUpdate(userId, { profilePic: profilePicPath });
+
+    // Uncomment this if using PostgreSQL
+    // await pool.query("UPDATE users SET profile_pic = $1 WHERE id = $2", [profilePicPath, userId]);
+
+    res.json({ success: true, message: "Profile picture updated", profilePic: profilePicPath });
+  } catch (error: any) {
+    console.error("❌ Error uploading profile picture:", error.message);
     res.status(500).json({ error: "Error uploading profile picture" });
   }
 });
 
-// Get User Profile (Including Picture)
-router.get("/profile", authMiddleware, async (req, res) => {
+/**
+ * @route   GET /api/users/session
+ * @desc    Verify user session
+ * @access  Private
+ */
+router.get("/session", authenticateJWT, async (req: Request, res: Response) => {
   try {
-    const userId = req.user.userId;
-    const user = await pool.query("SELECT id, username, email, profile_pic FROM users WHERE id = $1", [userId]);
+    const userId = req.user?.id;
+    if (!userId) return res.status(401).json({ error: "Unauthorized" });
 
-    if (!user.rows.length) return res.status(404).json({ error: "User not found" });
+    const user = await User.findById(userId).select("id username email profilePic");
 
-    res.json(user.rows[0]);
-  } catch (error) {
-    res.status(500).json({ error: "Error fetching user profile" });
-  }
-});
+    if (!user) return res.status(404).json({ error: "User not found" });
 
-export default router;
-router.get("/session", authMiddleware, async (req, res) => {
-  try {
-    const userId = req.user.userId;
-    const user = await pool.query("SELECT id, username, email, profile_pic FROM users WHERE id = $1", [userId]);
-
-    if (!user.rows.length) return res.status(404).json({ error: "User not found" });
-
-    res.json(user.rows[0]);
-  } catch (error) {
+    res.json({ success: true, data: user });
+  } catch (error: any) {
+    console.error("❌ Error verifying session:", error.message);
     res.status(500).json({ error: "Error verifying session" });
   }
 });
-router.post("/signup", userController.registerUser);
-router.post("/login", userController.loginUser);
-router.get("/profile", authMiddleware, userController.getUserProfile);
-import express from "express";
-import upload from "../middleware/uploadMiddleware";
-import { updateProfilePicture } from "../controllers/userController";
-
-const router = express.Router();
-
-router.post("/profile/picture", upload.single("image"), updateProfilePicture);
 
 export default router;
