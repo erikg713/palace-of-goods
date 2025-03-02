@@ -33,3 +33,20 @@ mongoose
     logger.error("❌ Database Connection Failed:", err);
     process.exit(1);
   });
+import express from 'express';
+import path from 'path';
+
+const app = express();
+const PORT = process.env.PORT || 5000;
+
+// Serve static files
+app.use(express.static(path.join(__dirname, '../client/build')));
+
+// Explicitly serve the service worker correctly
+app.get('/service-worker.js', (req, res) => {
+  res.sendFile(path.resolve(__dirname, '../client/build/service-worker.js'));
+});
+
+app.listen(PORT, () => {
+  console.log(`Server running on http://localhost:${PORT}`);
+});
