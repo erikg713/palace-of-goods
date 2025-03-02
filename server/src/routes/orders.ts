@@ -78,3 +78,49 @@ router.put("/:id", authenticateJWT, async (req: Request, res: Response) => {
 });
 
 export default router;
+import express, { Request, Response } from "express";
+import Order from "../models/Order";
+import { authenticateJWT } from "../middleware/auth";
+import { verifyPiTransaction, refundPiTransaction } from "../services/piVerification";
+import Web3 from "web3";
+
+const router = express.Router();
+const web3 = new Web3("https://rpc-mumbai.maticvigil.com");
+
+// Cancel Order & Process Refund
+router.post("/cancel/:id", authenticateJWT, async (req: Request, res: Response) => {
+  const order = await Order.findByPk(req.params.id);
+  if (!order) return res.status(404).json({ error: "Order not found" });
+
+  // Only allow cancellation for pending orders
+  if (order.status !== "pending") {
+    return res.status(400).json({ error: "Only pending orders can be canceled" });
+  }
+
+  // Verify Pi Network Transaction
+  if (order.transactionId && !(await verifyPiTransaction(order.transactionId))) {
+    return res.status(400).json({ error: "Pi transaction verification failed" });
+  }
+
+  // Refund the user via Pi Network
+  const refundSuccess = await refundPiTransaction(order.transactionId);
+  if (!refundSuccess) {
+    return res.status(500).json({ error: "Failed to refund Pi transaction" });
+  }
+
+  // Log cancellation on Web3
+  const transaction = await web3.eth.sendTransaction({
+    from: process.env.ADMIN_WALLET,
+    to: process.env.LOGGING_CONTRACT,
+    value: web3.utils.toWei("0.001", "ether"),
+    data: web3.utils.utf8ToHex(`Order ${order.id} canceled & refunded on Pi Network`),
+  });
+
+  // Mark order as canceled
+  order.status = "canceled";
+  await order.save();
+
+  res.json({ message: "Order canceled and refunded", txHash: transaction.transactionHash });
+});
+
+export default router;
