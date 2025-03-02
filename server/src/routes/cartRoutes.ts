@@ -22,9 +22,11 @@ router.post("/", authenticateJWT, async (req: Request, res: Response) => {
     }
 
     await cartItem.save();
-    res.json({ success: true, message: "Item added to cart", data: cartItem });
+    const updatedCart = await Cart.find({ userId });
+    res.json({ success: true, message: "Cart updated", data: updatedCart });
   } catch (error) {
-    res.status(500).json({ error: "Error adding to cart" });
+    console.error("❌ Error adding to cart:", error.message);
+    res.status(500).json({ success: false, error: "Error adding to cart" });
   }
 });
 
