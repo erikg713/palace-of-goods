@@ -7,7 +7,23 @@ import Dashboard from "./pages/Dashboard";
 import Checkout from "./pages/Checkout";
 import Navbar from "./components/Navbar";
 import { useContext } from "react";
+import { AuthProvider } from "./context/AuthContext";
+import PiAuth from "./components/PiAuth";
+import PiPayment from "./components/PiPayment";
 
+const App = () => {
+  return (
+    <AuthProvider>
+      <div>
+        <h1>Pi Network DApp</h1>
+        <PiAuth />
+        <PiPayment />
+      </div>
+    </AuthProvider>
+  );
+};
+
+export default App;
 const ProtectedRoute = ({ children }: { children: JSX.Element }) => {
   const { user } = useContext(AuthContext);
   return user ? children : <Navigate to="/login" />;
