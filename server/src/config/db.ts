@@ -5,7 +5,21 @@ import { User } from '../models/User';
 import { Product } from '../models/Product';
 import { Order } from '../models/Order';
 import logger from '../utils/logger';
+import mongoose from "mongoose";
+import { config } from "./index";
 
+export const connectDB = async (): Promise<void> => {
+  try {
+    await mongoose.connect(config.databaseURL, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+    } as mongoose.ConnectOptions);
+    console.log("✅ Palace-of-Goods Database Connected...");
+  } catch (error) {
+    console.error("❌ Database Connection Failed:", error);
+    process.exit(1);
+  }
+};
 export class DatabaseConfig {
   private static instance: DatabaseConfig;
   private dataSource: DataSource;
