@@ -11,7 +11,28 @@ router.get("/orders", authMiddleware, async (req, res) => {
 import express, { Request, Response } from "express";
 import Order from "../models/Order";
 import { authenticateJWT } from "../middleware/auth";
+import { cancelPionexTrade } from "../services/pionexLogging";
 
+router.post("/cancel/:id", authenticateJWT, async (req: Request, res: Response) => {
+  const order = await Order.findByPk(req.params.id);
+  if (!order) return res.status(404).json({ error: "Order not found" });
+
+  if (order.status !== "pending") {
+    return res.status(400).json({ error: "Only pending orders can be canceled" });
+  }
+
+  if (order.transactionId) {
+    // If order is a Pionex trade, attempt to cancel it
+    const tradeCanceled = await cancelPionexTrade(order.transactionId);
+    if (!tradeCanceled) return res.status(500).json({ error: "Failed to cancel Pionex trade" });
+  }
+
+  // Mark order as canceled
+  order.status = "canceled";
+  await order.save();
+
+  res.json({ message: "Order canceled" });
+});
 const router = express.Router();
 
 // Create Order after Pi Payment Success
