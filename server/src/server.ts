@@ -1,30 +1,33 @@
-import orderRoutes from "./routes/orders";
-app.use("/api/orders", orderRoutes);
 import express from "express";
 import cors from "cors";
 import helmet from "helmet";
 import morgan from "morgan";
 import dotenv from "dotenv";
-import productRoutes from "./routes/productRoutes";
-import userRoutes from "./routes/userRoutes";
-import paymentRoutes from "./routes/paymentRoutes";
+import authRoutes from "./routes/auth";
+import productRoutes from "./routes/products";
 import orderRoutes from "./routes/orders";
-app.use("/api/orders", orderRoutes);
+import { authenticateJWT } from "./middleware/auth";
+
 dotenv.config();
 
 const app = express();
+const PORT = process.env.PORT || 5000;
 
-// Middleware
-app.use(cors());
+// Security Middleware
+app.use(express.json());
+app.use(cors({ origin: process.env.FRONTEND_URL, credentials: true })); // Only allow frontend access
 app.use(helmet());
 app.use(morgan("dev"));
-app.use(express.json());
-app.use("/uploads", express.static("uploads"));
 
-// Routes
+// API Routes
+app.use("/api/auth", authRoutes);
 app.use("/api/products", productRoutes);
-app.use("/api/users", userRoutes);
-app.use("/api/payment", paymentRoutes);
+app.use("/api/orders", authenticateJWT, orderRoutes); // Protect orders with JWT
 
-const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+// Global Error Handler
+app.use((err, req, res, next) => {
+  console.error("Server Error:", err);
+  res.status(500).json({ error: "Internal Server Error" });
+});
+
+app.listen(PORT, () => console.log(`✅ Server running on port ${PORT}`));
