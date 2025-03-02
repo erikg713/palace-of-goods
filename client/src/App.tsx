@@ -10,7 +10,24 @@ import Navbar from "./components/Navbar";
 import PiAuth from "./components/PiAuth";
 import PiPayment from "./components/PiPayment";
 import Orders from "./pages/Orders";
+import AdminOrders from "./pages/AdminOrders";
 
+const App = () => {
+  return (
+    <Router>
+      <Navbar />
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/signup" element={<Signup />} />
+        <Route path="/checkout" element={<ProtectedRoute><Checkout /></ProtectedRoute>} />
+        <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+        <Route path="/orders" element={<ProtectedRoute><Orders /></ProtectedRoute>} />
+        <Route path="/admin/orders" element={<ProtectedRoute><AdminOrders /></ProtectedRoute>} />
+      </Routes>
+    </Router>
+  );
+};
 const App = () => {
   return (
     <Router>
