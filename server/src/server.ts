@@ -6,7 +6,8 @@ import dotenv from "dotenv";
 import productRoutes from "./routes/productRoutes";
 import userRoutes from "./routes/userRoutes";
 import paymentRoutes from "./routes/paymentRoutes";
-
+import orderRoutes from "./routes/orders";
+app.use("/api/orders", orderRoutes);
 dotenv.config();
 
 const app = express();
