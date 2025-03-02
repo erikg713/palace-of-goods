@@ -1,12 +1,25 @@
 {
   "compilerOptions": {
-    "target": "ES6",
-    "module": "ESNext",
-    "jsx": "react-jsx",
-    "outDir": "./build",
-    "strict": true,
-    "esModuleInterop": true
+    "target": "ES6",                     // Ensures compatibility with modern browsers
+    "module": "ESNext",                   // Uses ESNext modules for better tree-shaking
+    "lib": ["DOM", "ESNext"],              // Includes modern JavaScript and DOM APIs
+    "jsx": "react-jsx",                   // Enables React JSX transformation
+    "outDir": "./build",                  // Outputs compiled files in /build folder
+    "rootDir": "./src",                   // Restricts compilation to the /src folder
+    "strict": true,                        // Enables all strict type checks
+    "esModuleInterop": true,               // Ensures compatibility with CommonJS modules
+    "moduleResolution": "node",            // Resolves modules similar to Node.js
+    "resolveJsonModule": true,             // Allows importing JSON files
+    "skipLibCheck": true,                  // Speeds up compilation by skipping type checking in libraries
+    "forceConsistentCasingInFileNames": true, // Prevents issues with case-sensitive file imports
+    "noImplicitAny": true,                 // Ensures explicit types for all variables
+    "strictNullChecks": true,              // Avoids null/undefined-related bugs
+    "noUnusedLocals": true,                // Helps clean up unused variables
+    "noUnusedParameters": true,            // Helps avoid unnecessary parameters
+    "noImplicitReturns": true,             // Ensures all functions explicitly return a value
+    "noFallthroughCasesInSwitch": true,    // Prevents unintended fallthrough in switch statements
+    "allowSyntheticDefaultImports": true   // Allows default imports from modules without them
   },
-  "include": ["src"],
-  "exclude": ["node_modules"]
+  "include": ["src"],                      // Compiles only the source code
+  "exclude": ["node_modules", "build"]     // Excludes unnecessary directories from compilation
 }
