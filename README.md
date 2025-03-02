@@ -112,6 +112,7 @@ npm install
 npm install pi-sdk web3 dotenv
 npx terser js/main.js -o js/main.min.js --compress --mangle
 npx clean-css -o css/styles.min.css css/styles.css
+npm install express fs moment
 Run Migrations & Start the Server
 
 npm run migrate  # Apply database migrations
