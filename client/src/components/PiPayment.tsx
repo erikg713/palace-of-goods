@@ -1,3 +1,51 @@
+import React, { useState } from "react";
+import { Pi } from "pi-sdk";
+import { placeOrder } from "../services/orderService";
+import { useCartStore } from "../state/cartStore";
+
+const PiPayment: React.FC<{ amount: number; memo: string; onSuccess: () => void }> = ({ amount, memo, onSuccess }) => {
+  const [loading, setLoading] = useState(false);
+  const { cart, clearCart } = useCartStore();
+  const token = localStorage.getItem("token");
+
+  const handlePiPayment = async () => {
+    setLoading(true);
+    try {
+      const payment = await Pi.createPayment({
+        amount,
+        memo,
+        metadata: { type: "purchase" },
+        callbacks: {
+          onCompleted: async (paymentId) => {
+            console.log("Payment completed:", paymentId);
+            alert("Payment successful!");
+
+            // Store order with transaction ID
+            await placeOrder(cart, amount, paymentId, token || "");
+            clearCart();
+            onSuccess();
+          },
+        },
+      });
+
+      return payment;
+    } catch (error) {
+      alert("Payment failed.");
+      console.error(error);
+    }
+    setLoading(false);
+  };
+
+  return (
+    <div>
+      <button onClick={handlePiPayment} disabled={loading}>
+        {loading ? "Processing..." : `Pay ${amount} Pi`}
+      </button>
+    </div>
+  );
+};
+
+export default PiPayment;
 import { useState } from "react";
 import { initiatePiPayment } from "../utils/pi";
 
