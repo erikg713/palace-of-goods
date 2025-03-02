@@ -120,3 +120,28 @@ export const useAuth = (): AuthContextType => {
   }
   return context;
 };
+import React, { createContext, useState, ReactNode } from "react";
+
+interface AuthContextType {
+  user: any;
+  setUser: (user: any) => void;
+  isAdmin: boolean;
+}
+
+export const AuthContext = createContext<AuthContextType>({
+  user: null,
+  setUser: () => {},
+  isAdmin: false,
+});
+
+export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
+  const [user, setUser] = useState(null);
+
+  const isAdmin = user?.role === "admin" || user?.role === "seller";
+
+  return (
+    <AuthContext.Provider value={{ user, setUser, isAdmin }}>
+      {children}
+    </AuthContext.Provider>
+  );
+};
