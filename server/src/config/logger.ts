@@ -1,14 +1,17 @@
 import winston from "winston";
+import { config } from "./index";
 
 const logger = winston.createLogger({
-  level: "info",
+  level: config.logLevel,
   format: winston.format.combine(
     winston.format.timestamp(),
-    winston.format.json()
+    winston.format.printf(({ timestamp, level, message }) => `[${timestamp}] ${level.toUpperCase()}: ${message}`)
   ),
   transports: [
     new winston.transports.Console(),
-    new winston.transports.File({ filename: "logs/server.log" }),
+    ...(config.env === "production"
+      ? [new winston.transports.File({ filename: "logs/server.log" })]
+      : []),
   ],
 });
 
