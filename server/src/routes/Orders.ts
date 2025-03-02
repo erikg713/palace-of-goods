@@ -47,3 +47,34 @@ router.get("/seller", authenticateJWT, async (req: Request, res: Response) => {
 });
 
 export default router;
+import express, { Request, Response } from "express";
+import Order from "../models/Order";
+import { authenticateJWT } from "../middleware/auth";
+
+const router = express.Router();
+
+// Get all orders (Admin/Seller Only)
+router.get("/admin", authenticateJWT, async (req: Request, res: Response) => {
+  if (req.user?.role !== "admin" && req.user?.role !== "seller") {
+    return res.status(403).json({ error: "Access denied" });
+  }
+
+  const orders = await Order.findAll();
+  res.json(orders);
+});
+
+// Update Order Status (Admin Only)
+router.put("/:id", authenticateJWT, async (req: Request, res: Response) => {
+  const order = await Order.findByPk(req.params.id);
+  if (!order) return res.status(404).json({ error: "Order not found" });
+
+  if (req.user?.role !== "admin" && req.user?.role !== "seller") {
+    return res.status(403).json({ error: "Access denied" });
+  }
+
+  order.status = req.body.status;
+  await order.save();
+  res.json(order);
+});
+
+export default router;
