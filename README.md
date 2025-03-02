@@ -126,7 +126,7 @@ Install Dependencies
 
 cd client
 npm install
-
+npm install pi-sdk
 Start the Development Server
 
 npm start
