@@ -30,3 +30,34 @@ const Checkout = () => {
 };
 
 export default Checkout;
+import React from "react";
+import { useCartStore } from "../state/cartStore";
+import PiPayment from "../components/PiPayment";
+
+const Checkout: React.FC = () => {
+  const { cart, clearCart } = useCartStore();
+
+  const totalPrice = cart.reduce((acc, item) => acc + item.price, 0);
+
+  return (
+    <div>
+      <h1>Checkout</h1>
+      {cart.length === 0 ? (
+        <p>Your cart is empty.</p>
+      ) : (
+        <>
+          {cart.map((item) => (
+            <div key={item.id} className="cart-item">
+              <h3>{item.name}</h3>
+              <p>{item.price} Pi</p>
+            </div>
+          ))}
+          <h3>Total: {totalPrice} Pi</h3>
+          <PiPayment amount={totalPrice} memo="Marketplace Purchase" onSuccess={clearCart} />
+        </>
+      )}
+    </div>
+  );
+};
+
+export default Checkout;
