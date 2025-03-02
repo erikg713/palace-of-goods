@@ -46,3 +46,22 @@ app.get("/sitemap.xml", (req, res) => {
 });
 
 app.listen(PORT, () => console.log(`🌍 Sitemap server running at http://localhost:${PORT}/sitemap.xml`));
+import mongoose from "mongoose";
+import Product from "./models/Product"; // Import your Product model
+
+const generateDynamicSitemap = async () => {
+  await mongoose.connect("mongodb://your-mongo-url");
+
+  const products = await Product.find().select("slug updatedAt");
+
+  const productPages = products.map((product) => ({
+    loc: `https://palaceofgoods.com/product/${product.slug}`,
+    priority: "0.8",
+    changefreq: "weekly",
+    lastmod: moment(product.updatedAt).format("YYYY-MM-DD"),
+  }));
+
+  const allPages = [...staticPages, ...productPages]; // Merge static + dynamic pages
+
+  generateSitemap(allPages);
+};
