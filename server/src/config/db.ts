@@ -1,96 +1,98 @@
 import 'reflect-metadata';
 import { DataSource, DataSourceOptions, EntityManager } from 'typeorm';
-import { env } from '../config/env';
-import { User } from '../models/User';
-import { Product } from '../models/Product';
-import { Order } from '../models/Order';
-import logger from '../utils/logger';
 import mongoose from "mongoose";
-import { config } from "./index";
+import { Pool } from "pg";
+import { env } from "../config/dotenv";
+import logger from "../utils/logger";
 
-export const connectDB = async (): Promise<void> => {
+// Choose between MongoDB or PostgreSQL
+const USE_MONGODB = env.MONGODB_URI !== undefined;
+const USE_POSTGRES = env.DATABASE_URL !== undefined;
+
+// ✅ MongoDB Connection
+const connectMongoDB = async (): Promise<void> => {
+  if (!USE_MONGODB) return;
+
   try {
-    await mongoose.connect(config.databaseURL, {
+    await mongoose.connect(env.MONGODB_URI!, {
       useNewUrlParser: true,
       useUnifiedTopology: true,
+      serverSelectionTimeoutMS: 5000, // Fast fail on bad connection
     } as mongoose.ConnectOptions);
-    console.log("✅ Palace-of-Goods Database Connected...");
+    
+    logger.info("✅ Connected to MongoDB Database");
   } catch (error) {
-    console.error("❌ Database Connection Failed:", error);
-    process.exit(1);
+    logger.error("❌ MongoDB Connection Failed. Retrying in 5s...", error);
+    setTimeout(connectMongoDB, 5000);
   }
 };
-export class DatabaseConfig {
+
+// ✅ PostgreSQL Connection
+const pool = USE_POSTGRES
+  ? new Pool({
+      connectionString: env.DATABASE_URL,
+      ssl: env.NODE_ENV === "production" ? { rejectUnauthorized: false } : false,
+    })
+  : null;
+
+// ✅ TypeORM PostgreSQL Configuration
+class DatabaseConfig {
   private static instance: DatabaseConfig;
   private dataSource: DataSource;
 
-  // Database entities/models
-  private entities = [
-    User,
-    Product,
-    Order
-  ];
-
   private constructor() {
-    const isProduction = env.NODE_ENV === 'production';
-    
+    if (!USE_POSTGRES) return;
+
     const baseConfig: DataSourceOptions = {
       type: 'postgres',
-      host: env.DB_HOST,
-      port: env.DB_PORT,
-      username: env.DB_USER,
-      password: env.DB_PASSWORD,
-      database: env.DB_NAME,
-      synchronize: !isProduction, // Disable in production!
-      logging: env.DB_LOGGING,
-      entities: this.entities,
-      migrations: ['dist/migrations/*.js'],
+      url: env.DATABASE_URL,
+      synchronize: env.NODE_ENV !== 'production', // Disable in production!
+      logging: env.DB_LOGGING === "true",
+      entities: ["src/models/**/*.ts"],
+      migrations: ["dist/migrations/*.js"],
       subscribers: [],
       poolSize: parseInt(env.DB_POOL_SIZE || '10', 10),
       extra: {
-        ssl: isProduction ? { rejectUnauthorized: false } : false
-      }
+        ssl: env.NODE_ENV === "production" ? { rejectUnauthorized: false } : false,
+      },
     };
 
     this.dataSource = new DataSource(baseConfig);
   }
 
   public static getInstance(): DatabaseConfig {
-    if (!DatabaseConfig.instance) {
+    if (!DatabaseConfig.instance && USE_POSTGRES) {
       DatabaseConfig.instance = new DatabaseConfig();
     }
-    return DatabaseConfig.instance;
+    return DatabaseConfig.instance!;
   }
 
   public async initialize(): Promise<void> {
+    if (!USE_POSTGRES) return;
     try {
       await this.dataSource.initialize();
-      logger.info('Database connection established');
-      
-      // Run migrations in production
-      if (env.NODE_ENV === 'production') {
+      logger.info("✅ PostgreSQL connection established");
+
+      if (env.NODE_ENV === "production") {
         await this.dataSource.runMigrations();
-        logger.info('Database migrations executed');
+        logger.info("✅ PostgreSQL migrations executed");
       }
     } catch (error) {
-      logger.error('Failed to connect to database:', error);
+      logger.error("❌ PostgreSQL connection failed:", error);
       process.exit(1);
     }
   }
 
-  public getDataSource(): DataSource {
-    return this.dataSource;
-  }
-
   public async close(): Promise<void> {
-    await this.dataSource.destroy();
-    logger.info('Database connection closed');
+    if (USE_POSTGRES) {
+      await this.dataSource.destroy();
+      logger.info("✅ PostgreSQL connection closed");
+    }
   }
 
-  // Example transaction wrapper
-  public async transaction<T>(
-    operation: (entityManager: EntityManager) => Promise<T>
-  ): Promise<T> {
+  public async transaction<T>(operation: (entityManager: EntityManager) => Promise<T>): Promise<T> {
+    if (!USE_POSTGRES) throw new Error("PostgreSQL is not enabled");
+    
     const queryRunner = this.dataSource.createQueryRunner();
     await queryRunner.connect();
     await queryRunner.startTransaction();
@@ -101,7 +103,7 @@ export class DatabaseConfig {
       return result;
     } catch (error) {
       await queryRunner.rollbackTransaction();
-      logger.error('Transaction failed:', error);
+      logger.error("❌ Transaction failed:", error);
       throw error;
     } finally {
       await queryRunner.release();
@@ -109,32 +111,11 @@ export class DatabaseConfig {
   }
 }
 
-// Singleton instance export
-export const database = DatabaseConfig.getInstance();
-
-
-import { Pool } from "pg";
-
-const pool = new Pool({
-  connectionString: process.env.DATABASE_URL,
-});
-
-export default pool;
-import mongoose from "mongoose";
-import { config } from "./index";
-
-const connectDB = async (): Promise<void> => {
-  try {
-    await mongoose.connect(config.dbURL, {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-      serverSelectionTimeoutMS: 5000, // Fast fail on bad connection
-    } as mongoose.ConnectOptions);
-    console.log("✅ Connected to Palace-of-Goods Database");
-  } catch (error) {
-    console.error("❌ Database Connection Failed, retrying in 5s...", error);
-    setTimeout(connectDB, 5000);
-  }
+// ✅ Export Functions Based on Database Choice
+export const connectDB = async (): Promise<void> => {
+  await connectMongoDB();
+  if (USE_POSTGRES) await DatabaseConfig.getInstance().initialize();
 };
 
-export { connectDB };
+export const database = USE_POSTGRES ? DatabaseConfig.getInstance() : null;
+export const pgPool = pool;
