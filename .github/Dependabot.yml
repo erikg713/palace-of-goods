@@ -12,7 +12,7 @@ updates:
       - "dependencies"
       - "npm"
     reviewers:
-      - "team-leads"  # Replace with actual GitHub username or team
+      - "erikg713"  # Replace with actual GitHub username or team
     commit-message:
       prefix: "npm"
       include: "scope"
@@ -47,7 +47,7 @@ updates:
       - "ci-cd"
       - "dependencies"
     reviewers:
-      - "devops-team"  # Replace with actual GitHub username or team
+      - "erikg713"  # Replace with actual GitHub username or team
     commit-message:
       prefix: "ci"
       include: "scope"
