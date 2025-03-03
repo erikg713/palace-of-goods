@@ -14,6 +14,10 @@ router.post("/", authenticateJWT, async (req: Request, res: Response) => {
     const { productId, quantity } = req.body;
     const userId = req.user?.id;
 
+    if (!userId || !productId || !quantity) {
+      return res.status(400).json({ success: false, error: "Missing required fields" });
+    }
+
     let cartItem = await Cart.findOne({ userId, productId });
     if (cartItem) {
       cartItem.quantity += quantity;
@@ -25,7 +29,7 @@ router.post("/", authenticateJWT, async (req: Request, res: Response) => {
     const updatedCart = await Cart.find({ userId });
     res.json({ success: true, message: "Cart updated", data: updatedCart });
   } catch (error) {
-    console.error("❌ Error adding to cart:", error.message);
+    console.error("❌ Error adding to cart:", (error as Error).message);
     res.status(500).json({ success: false, error: "Error adding to cart" });
   }
 });
