@@ -31,85 +31,105 @@ router.post("/", authenticateJWT, async (req: Request, res: Response) => {
 
 // 🔹 Get User's Orders
 router.get("/", authenticateJWT, async (req: Request, res: Response) => {
-  const orders = await Order.findAll({ where: { userId: req.user?.id } });
-  res.json({ success: true, data: orders });
+  try {
+    const orders = await Order.findAll({ where: { userId: req.user?.id } });
+    res.json({ success: true, data: orders });
+  } catch (error) {
+    res.status(500).json({ success: false, error: "Error retrieving orders" });
+  }
 });
 
 // 🔹 Get Seller/Admin Orders
 router.get("/seller", authenticateJWT, async (req: Request, res: Response) => {
-  if (req.user?.role !== "admin" && req.user?.role !== "seller") {
-    return res.status(403).json({ error: "Access denied" });
+  try {
+    if (req.user?.role !== "admin" && req.user?.role !== "seller") {
+      return res.status(403).json({ error: "Access denied" });
+    }
+    const orders = await Order.findAll();
+    res.json({ success: true, data: orders });
+  } catch (error) {
+    res.status(500).json({ success: false, error: "Error retrieving orders" });
   }
-  const orders = await Order.findAll();
-  res.json({ success: true, data: orders });
 });
 
 // 🔹 Get All Orders (Admin Only)
 router.get("/admin", authenticateJWT, async (req: Request, res: Response) => {
-  if (req.user?.role !== "admin") {
-    return res.status(403).json({ error: "Access denied" });
+  try {
+    if (req.user?.role !== "admin") {
+      return res.status(403).json({ error: "Access denied" });
+    }
+    const orders = await Order.findAll();
+    res.json({ success: true, data: orders });
+  } catch (error) {
+    res.status(500).json({ success: false, error: "Error retrieving orders" });
   }
-  const orders = await Order.findAll();
-  res.json({ success: true, data: orders });
 });
 
 // 🔹 Cancel Order (Only Pending Orders)
 router.post("/cancel/:id", authenticateJWT, async (req: Request, res: Response) => {
-  const order = await Order.findByPk(req.params.id);
-  if (!order) return res.status(404).json({ error: "Order not found" });
+  try {
+    const order = await Order.findByPk(req.params.id);
+    if (!order) return res.status(404).json({ error: "Order not found" });
 
-  if (order.status !== "pending") {
-    return res.status(400).json({ error: "Only pending orders can be canceled" });
-  }
-
-  // Handle Pionex Trade Cancellation
-  if (order.transactionId && order.status === "pionex") {
-    const tradeCanceled = await cancelPionexTrade(order.transactionId);
-    if (!tradeCanceled) return res.status(500).json({ error: "Failed to cancel Pionex trade" });
-  }
-
-  // Handle Pi Network Refund
-  if (order.transactionId) {
-    const isVerified = await verifyPiTransaction(order.transactionId);
-    if (!isVerified) return res.status(400).json({ error: "Pi transaction verification failed" });
-
-    const refundSuccess = await refundPiTransaction(order.transactionId);
-    if (!refundSuccess) {
-      return res.status(500).json({ error: "Failed to refund Pi transaction" });
+    if (order.status !== "pending") {
+      return res.status(400).json({ error: "Only pending orders can be canceled" });
     }
+
+    // Handle Pionex Trade Cancellation
+    if (order.transactionId && order.status === "pionex") {
+      const tradeCanceled = await cancelPionexTrade(order.transactionId);
+      if (!tradeCanceled) return res.status(500).json({ error: "Failed to cancel Pionex trade" });
+    }
+
+    // Handle Pi Network Refund
+    if (order.transactionId) {
+      const isVerified = await verifyPiTransaction(order.transactionId);
+      if (!isVerified) return res.status(400).json({ error: "Pi transaction verification failed" });
+
+      const refundSuccess = await refundPiTransaction(order.transactionId);
+      if (!refundSuccess) {
+        return res.status(500).json({ error: "Failed to refund Pi transaction" });
+      }
+    }
+
+    // Optional: Web3 Logging
+    if (process.env.ADMIN_WALLET && process.env.LOGGING_CONTRACT) {
+      const transaction = await web3.eth.sendTransaction({
+        from: process.env.ADMIN_WALLET,
+        to: process.env.LOGGING_CONTRACT,
+        value: web3.utils.toWei("0.001", "ether"),
+        data: web3.utils.utf8ToHex(`Order ${order.id} canceled & refunded on Pi Network`),
+      });
+
+      console.log("Web3 Log:", transaction.transactionHash);
+    }
+
+    // Mark order as canceled
+    order.status = "canceled";
+    await order.save();
+
+    res.json({ success: true, message: "Order canceled & refunded" });
+  } catch (error) {
+    res.status(500).json({ success: false, error: "Error canceling order" });
   }
-
-  // Optional: Web3 Logging
-  if (process.env.ADMIN_WALLET && process.env.LOGGING_CONTRACT) {
-    const transaction = await web3.eth.sendTransaction({
-      from: process.env.ADMIN_WALLET,
-      to: process.env.LOGGING_CONTRACT,
-      value: web3.utils.toWei("0.001", "ether"),
-      data: web3.utils.utf8ToHex(`Order ${order.id} canceled & refunded on Pi Network`),
-    });
-
-    console.log("Web3 Log:", transaction.transactionHash);
-  }
-
-  // Mark order as canceled
-  order.status = "canceled";
-  await order.save();
-
-  res.json({ success: true, message: "Order canceled & refunded" });
 });
 
 // 🔹 Update Order Status (Admin Only)
 router.put("/:id", authenticateJWT, async (req: Request, res: Response) => {
-  const order = await Order.findByPk(req.params.id);
-  if (!order) return res.status(404).json({ error: "Order not found" });
+  try {
+    const order = await Order.findByPk(req.params.id);
+    if (!order) return res.status(404).json({ error: "Order not found" });
 
-  if (req.user?.role !== "admin" && req.user?.role !== "seller") {
-    return res.status(403).json({ error: "Access denied" });
+    if (req.user?.role !== "admin" && req.user?.role !== "seller") {
+      return res.status(403).json({ error: "Access denied" });
+    }
+
+    order.status = req.body.status;
+    await order.save();
+    res.json({ success: true, message: "Order updated", data: order });
+  } catch (error) {
+    res.status(500).json({ success: false, error: "Error updating order" });
   }
-
-  order.status = req.body.status;
-  await order.save();
-  res.json({ success: true, message: "Order updated", data: order });
 });
 
 export default router;
