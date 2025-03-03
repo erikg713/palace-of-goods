@@ -1,1 +1,23 @@
+const express = require('express');
+const favicon = require('serve-favicon');
+const path = require('path');
+
+const app = express();
+const PORT = 3000;
+
+// Serve the favicon from the "public" folder
+app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
+
+// Example route
+app.get('/', (req, res) => {
+  res.send('<h1>WELCOME 2 PALACE OF GOODS!!!</h1><p>Your favicon should appear in the browser tab.</p>');
+});
+
+// Handle missing favicon.ico requests (optional)
+app.get('/favicon.ico', (req, res) => res.status(204).end());
+
+// Start the server
+app.listen(PORT, () => {
+  console.log(`Server is running on http://localhost:${PORT}`);
+});
 
