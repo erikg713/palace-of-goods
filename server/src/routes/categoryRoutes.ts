@@ -14,7 +14,7 @@ router.get("/", async (req: Request, res: Response) => {
     const categories = await Category.find();
     res.json({ success: true, data: categories });
   } catch (error) {
-    res.status(500).json({ error: "Error fetching categories" });
+    res.status(500).json({ success: false, error: "Error fetching categories" });
   }
 });
 
