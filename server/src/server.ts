@@ -33,3 +33,24 @@ const startServer = async () => {
 
 // Start the server
 startServer();
+import { connectDB } from "./config/db";
+import { logger } from "./utils/logger";
+import { env } from "./config/dotenv";
+import app from "./app"; // Import the app instance
+
+const PORT = env.PORT || 5000;
+
+const startServer = async () => {
+  try {
+    await connectDB(); // ✅ Connect to database first
+
+    app.listen(PORT, () => {
+      logger.info(`🚀 Server running on http://localhost:${PORT}`);
+    });
+  } catch (error) {
+    logger.error("❌ Server startup failed:", error);
+    process.exit(1);
+  }
+};
+
+startServer();
