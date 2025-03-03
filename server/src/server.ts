@@ -3,7 +3,18 @@ import { logger } from "./utils/logger";
 import app from "./app"; // Import app.ts
 import express from 'express';
 import path from 'path';
+import express from "express";
+import { connectDB } from "./config/db";
+import { env } from "./config/dotenv";
 
+const app = express();
+
+// Connect to DB
+connectDB();
+
+app.listen(env.PORT, () => {
+  console.log(`🚀 Server running on port ${env.PORT}`);
+});
 const app = express();
 const PORT = process.env.PORT || 5000;
 
