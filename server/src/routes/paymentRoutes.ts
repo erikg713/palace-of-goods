@@ -1,4 +1,4 @@
-import express from "express";
+import express, { Request, Response } from "express";
 import { PiNetwork } from "@pinetwork/pi-backend";
 import dotenv from "dotenv";
 
@@ -17,7 +17,7 @@ const pi = new PiNetwork({
 });
 
 // 🔹 Create a Pi Payment Request
-router.post("/create", async (req, res) => {
+router.post("/create", async (req: Request, res: Response) => {
   try {
     const { amount, userId } = req.body;
 
@@ -33,13 +33,13 @@ router.post("/create", async (req, res) => {
 
     res.json({ success: true, message: "Payment initiated", data: payment });
   } catch (error: any) {
-    console.error("❌ Pi Payment Creation Error:", error.message);
+    console.error("❌ Pi Payment Creation Error:", error);
     res.status(500).json({ success: false, error: "Failed to create payment" });
   }
 });
 
 // 🔹 Verify a Pi Payment
-router.post("/verify", async (req, res) => {
+router.post("/verify", async (req: Request, res: Response) => {
   try {
     const { paymentId } = req.body;
 
@@ -55,7 +55,7 @@ router.post("/verify", async (req, res) => {
       return res.status(400).json({ success: false, error: "Payment not completed", data: payment });
     }
   } catch (error: any) {
-    console.error("❌ Pi Payment Verification Error:", error.message);
+    console.error("❌ Pi Payment Verification Error:", error);
     res.status(500).json({ success: false, error: "Failed to verify payment" });
   }
 });
