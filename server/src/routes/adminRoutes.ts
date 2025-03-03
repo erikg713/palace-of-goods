@@ -11,12 +11,16 @@ const router = express.Router();
  * @access  Private (Admin)
  */
 router.get("/users", authenticateJWT, async (req: Request, res: Response) => {
-  if (req.user?.role !== "admin") {
-    return res.status(403).json({ error: "Access denied" });
-  }
+  try {
+    if (req.user?.role !== "admin") {
+      return res.status(403).json({ error: "Access denied" });
+    }
 
-  const users = await User.find();
-  res.json({ success: true, data: users });
+    const users = await User.find();
+    res.json({ success: true, data: users });
+  } catch (error) {
+    res.status(500).json({ error: "Server error" });
+  }
 });
 
 /**
@@ -25,12 +29,16 @@ router.get("/users", authenticateJWT, async (req: Request, res: Response) => {
  * @access  Private (Admin)
  */
 router.get("/orders", authenticateJWT, async (req: Request, res: Response) => {
-  if (req.user?.role !== "admin") {
-    return res.status(403).json({ error: "Access denied" });
-  }
+  try {
+    if (req.user?.role !== "admin") {
+      return res.status(403).json({ error: "Access denied" });
+    }
 
-  const orders = await Order.find();
-  res.json({ success: true, data: orders });
+    const orders = await Order.find();
+    res.json({ success: true, data: orders });
+  } catch (error) {
+    res.status(500).json({ error: "Server error" });
+  }
 });
 
 export default router;
