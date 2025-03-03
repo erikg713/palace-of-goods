@@ -1,12 +1,21 @@
 {
   "compilerOptions": {
-    "target": "ES6",
-    "module": "CommonJS",
-    "outDir": "./dist",
-    "rootDir": "./src",
-    "strict": true,
-    "esModuleInterop": true
+    "target": "ES6",                // ✅ Use modern ES6 features
+    "module": "CommonJS",           // ✅ Keep it compatible with Node.js
+    "outDir": "./dist",             // ✅ Output compiled files to 'dist' folder
+    "rootDir": "./src",             // ✅ Keep source files in 'src' folder
+    "strict": true,                 // ✅ Enable strict TypeScript checking
+    "esModuleInterop": true,        // ✅ Allow default imports from CommonJS modules
+    "forceConsistentCasingInFileNames": true, // ✅ Prevent filename casing mismatches
+    "noImplicitAny": true,          // ✅ Require explicit types for better safety
+    "strictNullChecks": true,       // ✅ Prevent null-related runtime errors
+    "skipLibCheck": true,           // ✅ Speed up compilation by skipping library type checking
+    "resolveJsonModule": true,      // ✅ Allow importing JSON files
+    "allowJs": true,                // ✅ Allow JavaScript files in the project
+    "noUnusedLocals": true,         // ✅ Remove unused variables (saves memory)
+    "noUnusedParameters": true,     // ✅ Prevent unused function parameters
+    "noFallthroughCasesInSwitch": true // ✅ Prevent unintended case fallthrough in switch statements
   },
-  "include": ["src"],
-  "exclude": ["node_modules"]
+  "include": ["src"],                // ✅ Only compile files inside 'src'
+  "exclude": ["node_modules", "dist"] // ✅ Ignore 'node_modules' & 'dist' from compilation
 }
