@@ -41,7 +41,7 @@ export const getProducts = async (req: Request, res: Response) => {
     const filter: any = {};
 
     if (search) filter.name = { $regex: search, $options: "i" };
-    if (category) filter.category = category;
+    if (category) filter.category = { $eq: category };
 
     const products = await Product.find(filter)
       .skip((Number(page) - 1) * Number(limit))
