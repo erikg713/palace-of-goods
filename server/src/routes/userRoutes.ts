@@ -16,14 +16,14 @@ const SECRET_KEY = process.env.JWT_SECRET || "your_secret_key";
  */
 router.post("/signup", async (req: Request, res: Response) => {
   try {
-    const { username, email, password } = req.body;
+    const { username, email, password }: { username: string; email: string; password: string } = req.body;
     const existingUser = await findUserByEmail(email);
     if (existingUser) return res.status(400).json({ error: "Email already in use" });
 
     const newUser = await createUser({ username, email, password });
     res.status(201).json({ success: true, message: "User registered successfully", data: newUser });
-  } catch (error: any) {
-    console.error("❌ Signup error:", error.message);
+  } catch (error) {
+    console.error("❌ Signup error:", (error as Error).message);
     res.status(500).json({ error: "Error registering user" });
   }
 });
@@ -35,7 +35,7 @@ router.post("/signup", async (req: Request, res: Response) => {
  */
 router.post("/login", async (req: Request, res: Response) => {
   try {
-    const { email, password } = req.body;
+    const { email, password }: { email: string; password: string } = req.body;
     const user = await findUserByEmail(email);
 
     if (!user || !(await bcrypt.compare(password, user.password))) {
@@ -45,8 +45,8 @@ router.post("/login", async (req: Request, res: Response) => {
     const token = jwt.sign({ userId: user.id }, SECRET_KEY, { expiresIn: "1h" });
 
     res.json({ success: true, token, userId: user.id, username: user.username });
-  } catch (error: any) {
-    console.error("❌ Login error:", error.message);
+  } catch (error) {
+    console.error("❌ Login error:", (error as Error).message);
     res.status(500).json({ error: "Error logging in" });
   }
 });
@@ -70,8 +70,8 @@ router.get("/profile", authenticateJWT, async (req: Request, res: Response) => {
     if (!user) return res.status(404).json({ error: "User not found" });
 
     res.json({ success: true, data: user });
-  } catch (error: any) {
-    console.error("❌ Error fetching profile:", error.message);
+  } catch (error) {
+    console.error("❌ Error fetching profile:", (error as Error).message);
     res.status(500).json({ error: "Error fetching user profile" });
   }
 });
@@ -84,7 +84,7 @@ router.get("/profile", authenticateJWT, async (req: Request, res: Response) => {
 router.put("/profile", authenticateJWT, async (req: Request, res: Response) => {
   try {
     const userId = req.user?.id;
-    const { username, email, password } = req.body;
+    const { username, email, password }: { username: string; email: string; password: string } = req.body;
 
     if (!userId) return res.status(401).json({ error: "Unauthorized" });
 
@@ -100,8 +100,8 @@ router.put("/profile", authenticateJWT, async (req: Request, res: Response) => {
     // const result = await pool.query("UPDATE users SET username = $1, email = $2 WHERE id = $3 RETURNING id, username, email", [username, email, userId]);
 
     res.json({ success: true, message: "Profile updated successfully", data: updatedUser });
-  } catch (error: any) {
-    console.error("❌ Error updating profile:", error.message);
+  } catch (error) {
+    console.error("❌ Error updating profile:", (error as Error).message);
     res.status(500).json({ error: "Error updating profile" });
   }
 });
@@ -125,8 +125,8 @@ router.post("/profile/picture", authenticateJWT, upload.single("profilePic"), as
     // await pool.query("UPDATE users SET profile_pic = $1 WHERE id = $2", [profilePicPath, userId]);
 
     res.json({ success: true, message: "Profile picture updated", profilePic: profilePicPath });
-  } catch (error: any) {
-    console.error("❌ Error uploading profile picture:", error.message);
+  } catch (error) {
+    console.error("❌ Error uploading profile picture:", (error as Error).message);
     res.status(500).json({ error: "Error uploading profile picture" });
   }
 });
@@ -146,8 +146,8 @@ router.get("/session", authenticateJWT, async (req: Request, res: Response) => {
     if (!user) return res.status(404).json({ error: "User not found" });
 
     res.json({ success: true, data: user });
-  } catch (error: any) {
-    console.error("❌ Error verifying session:", error.message);
+  } catch (error) {
+    console.error("❌ Error verifying session:", (error as Error).message);
     res.status(500).json({ error: "Error verifying session" });
   }
 });
