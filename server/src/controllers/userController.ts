@@ -1,85 +1,84 @@
-const User = require('../models/User'); // Import the User model
+import { Request, Response } from "express";
+import { User } from "../models/User";
+import bcrypt from 'bcrypt';
+import jwt from 'jsonwebtoken';
 
 // Get all users
-const getUsers = async (req, res) => {
+export const getUsers = async (req: Request, res: Response): Promise<void> => {
   try {
     const users = await User.find();
     res.status(200).json(users);
-  } catch (error) {
+  } catch (error: any) {
     res.status(500).json({ message: error.message });
   }
 };
 
 // Get a single user by ID
-const getUserById = async (req, res) => {
+export const getUserById = async (req: Request, res: Response): Promise<void> => {
   try {
     const user = await User.findById(req.params.id);
     if (!user) {
       return res.status(404).json({ message: 'User not found' });
     }
     res.status(200).json(user);
-  } catch (error) {
+  } catch (error: any) {
     res.status(500).json({ message: error.message });
   }
 };
 
 // Create a new user
-const createUser = async (req, res) => {
+export const createUser = async (req: Request, res: Response): Promise<void> => {
   try {
     const newUser = new User(req.body);
     const savedUser = await newUser.save();
     res.status(201).json(savedUser);
-  } catch (error) {
+  } catch (error: any) {
     res.status(400).json({ message: error.message });
   }
 };
 
 // Update a user by ID
-const updateUser = async (req, res) => {
+export const updateUser = async (req: Request, res: Response): Promise<void> => {
   try {
     const updatedUser = await User.findByIdAndUpdate(req.params.id, req.body, { new: true });
     if (!updatedUser) {
       return res.status(404).json({ message: 'User not found' });
     }
     res.status(200).json(updatedUser);
-  } catch (error) {
+  } catch (error: any) {
     res.status(400).json({ message: error.message });
   }
 };
 
 // Delete a user by ID
-const deleteUser = async (req, res) => {
+export const deleteUser = async (req: Request, res: Response): Promise<void> => {
   try {
     const deletedUser = await User.findByIdAndDelete(req.params.id);
     if (!deletedUser) {
       return res.status(404).json({ message: 'User not found' });
     }
     res.status(200).json({ message: 'User deleted successfully' });
-  } catch (error) {
+  } catch (error: any) {
     res.status(500).json({ message: error.message });
   }
 };
 
-module.exports = {
-  getUsers,
-  getUserById,
-  createUser,
-  updateUser,
-  deleteUser,
-};
-
-export const loginUser = async (req: Request, res: Response) => {
-  const user = await User.findOne({ where: { email: req.body.email } });
-  if (!user || !(await bcrypt.compare(req.body.password, user.password))) {
-    return res.status(400).json({ error: "Invalid credentials" });
+// Login a user
+export const loginUser = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const user = await User.findOne({ where: { email: req.body.email } });
+    if (!user || !(await bcrypt.compare(req.body.password, user.password))) {
+      return res.status(400).json({ error: "Invalid credentials" });
+    }
+    const token = jwt.sign({ id: user.id, role: user.role }, process.env.JWT_SECRET as string);
+    res.json({ token, user });
+  } catch (error: any) {
+    res.status(500).json({ error: "Login failed" });
   }
-  const token = jwt.sign({ id: user.id, role: user.role }, process.env.JWT_SECRET as string);
-  res.json({ token, user });
 };
-import { Request, Response } from "express";
-import { User } from "../models/User";
 
-export const updateProfilePicture = async (req: Request, res: Response) => {
+// Update profile picture
+export const updateProfilePicture = async (req: Request, res: Response): Promise<void> => {
   try {
     if (!req.file) return res.status(400).json({ error: "No image uploaded" });
 
@@ -90,7 +89,7 @@ export const updateProfilePicture = async (req: Request, res: Response) => {
     await user.save();
 
     res.json({ message: "Profile picture updated", profilePic: user.profilePic });
-  } catch (error) {
+  } catch (error: any) {
     res.status(500).json({ error: "Failed to upload image" });
   }
 };
