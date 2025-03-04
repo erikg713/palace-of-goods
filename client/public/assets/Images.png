@@ -1,1 +1,7 @@
+import myImage from '../assets/Images.png';
 
+function MyComponent() {
+  return <img src={myImage} alt="Description" />;
+}
+
+export default MyComponent;
