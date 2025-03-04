@@ -2,7 +2,16 @@ import express, { Request, Response } from "express";
 import { authenticateJWT } from "../middleware/auth";
 import User from "../models/User";
 import Order from "../models/Order";
+import express from "express";
+import { protect, adminOnly } from "../middlewares/authMiddleware";
 
+const router = express.Router();
+
+router.get("/dashboard", protect, adminOnly, (req, res) => {
+  res.json({ message: "Welcome, Admin!" });
+});
+
+export default router;
 const router = express.Router();
 
 /**
