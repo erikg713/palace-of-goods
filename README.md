@@ -88,7 +88,7 @@ Ensure you have the following installed on your system:
 
 Node.js (16+) & npm/yarn
 
-PostgreSQL
+MongoDB 
 
 Docker (Optional for deployment)
 
@@ -129,7 +129,8 @@ Backend will be running at http://127.0.0.1:5000.
 Install Dependencies
 
 cd client
-npm install
+npm install 
+npm install axios react-query react-router-dom
 npm install pi-sdk
 Start the Development Server
 node sitemap.ts
