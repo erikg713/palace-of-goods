@@ -19,3 +19,5 @@ export const User = sequelize.define("User", {
   password: { type: DataTypes.STRING },
   role: { type: DataTypes.ENUM("user", "admin"), defaultValue: "user" },
 });
+resetPasswordToken: { type: String },
+resetPasswordExpires: { type: Date },
