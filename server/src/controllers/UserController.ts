@@ -119,3 +119,17 @@ export const deleteUserProfile = async (req: Request, res: Response) => {
     res.status(500).json({ success: false, error: "Error deleting user" });
   }
 };
+export const forgotPassword = async (req: Request, res: Response) => {
+  const user = await User.findOne({ email: req.body.email });
+  if (!user) return res.status(400).json({ message: "User not found" });
+
+  const resetToken = crypto.randomBytes(32).toString("hex");
+  user.resetPasswordToken = resetToken;
+  user.resetPasswordExpires = Date.now() + 3600000; // 1 hour expiry
+  await user.save();
+
+  const resetUrl = `${process.env.BASE_URL}/reset-password/${resetToken}`;
+  await sendEmail(user.email, "Reset your password", `<a href="${resetUrl}">Reset Password</a>`);
+
+  res.json({ message: "Password reset email sent." });
+};
