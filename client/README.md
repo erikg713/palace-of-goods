@@ -1,11 +1,8 @@
 # INSTALL DEPENDENCIES FOR CLIENT SIDE #
 ---
 npm install serve-favicon
+npm create vite@latest frontend --template react-ts
+cd frontend
+npm install axios react-query react-router-dom
 ---
---
-tsc client/public/service-worker.ts --outDir client/public
-Security contact information for Palace of Goods
-Contact: security@palaceofgoods.com
-Expires: 2025-03-02
-Policy: https://palaceofgoods.com/security-policy
----
+
