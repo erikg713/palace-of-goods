@@ -1,10 +1,10 @@
 import axios from "axios";
 
-const API_URL = "https://your-backend-url.com/api";
+const API_URL = process.env.REACT_APP_API_URL || "https://your-backend-url.com/api";
 
 // 🔐 Helper: Get Auth Headers
 const getAuthHeaders = () => ({
-  Authorization: `Bearer ${localStorage.getItem("token")}`,
+  Authorization: `Bearer ${sessionStorage.getItem("token")}`,
 });
 
 // 🛍️ Products API
@@ -139,17 +139,4 @@ export const checkSession = async () => {
     console.error("Error checking session:", error);
     throw error;
   }
-};
-import axios from "axios";
-
-const API_URL = "http://localhost:5000/api/users";
-
-export const registerUser = async (userData: { name: string; email: string; password: string }) => {
-  const response = await axios.post(`${API_URL}/register`, userData);
-  return response.data;
-};
-
-export const loginUser = async (userData: { email: string; password: string }) => {
-  const response = await axios.post(`${API_URL}/login`, userData);
-  return response.data;
 };
