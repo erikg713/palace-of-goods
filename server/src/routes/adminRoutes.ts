@@ -4,7 +4,8 @@ import User from "../models/User";
 import Order from "../models/Order";
 import express from "express";
 import { protect, adminOnly } from "../middlewares/authMiddleware";
-
+import { getAllUsers } from "../controllers/adminController";
+router.get("/users", protect, adminOnly, getAllUsers);
 const router = express.Router();
 
 router.get("/dashboard", protect, adminOnly, (req, res) => {
