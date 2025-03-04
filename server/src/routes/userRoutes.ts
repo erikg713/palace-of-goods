@@ -8,7 +8,17 @@ import { pool } from "../utils/db"; // Uncomment this if using PostgreSQL
 
 const router = express.Router();
 const SECRET_KEY = process.env.JWT_SECRET || "your_secret_key";
+router.get("/verify/:token", async (req, res) => {
+  const user = await User.findOne({ verificationToken: req.params.token });
 
+  if (!user) return res.status(400).json({ message: "Invalid token" });
+
+  user.isVerified = true;
+  user.verificationToken = undefined;
+  await user.save();
+
+  res.json({ message: "Email verified. You can now log in." });
+});
 /**
  * @route   POST /api/users/signup
  * @desc    Register a new user
