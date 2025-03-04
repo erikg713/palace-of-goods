@@ -1,7 +1,51 @@
 import { createContext, useState, useEffect } from "react";
 import { checkSession } from "../api";
 import React, { createContext, useState, ReactNode } from "react";
+import { createContext, useState, useEffect, ReactNode } from "react";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
+interface AuthContextType {
+  user: any;
+  login: (email: string, password: string) => Promise<void>;
+  logout: () => void;
+}
+
+export const AuthContext = createContext<AuthContextType | null>(null);
+
+const AuthProvider = ({ children }: { children: ReactNode }) => {
+  const [user, setUser] = useState<{ email: string; role: string } | null>(null);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (token) {
+      axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+      setUser(JSON.parse(localStorage.getItem("user")!));
+    }
+  }, []);
+
+  const login = async (email: string, password: string) => {
+    const { data } = await axios.post("http://localhost:5000/api/users/login", { email, password });
+    localStorage.setItem("token", data.token);
+    localStorage.setItem("user", JSON.stringify(data.user));
+    axios.defaults.headers.common["Authorization"] = `Bearer ${data.token}`;
+    setUser(data.user);
+    navigate("/dashboard");
+  };
+
+  const logout = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
+    delete axios.defaults.headers.common["Authorization"];
+    setUser(null);
+    navigate("/login");
+  };
+
+  return <AuthContext.Provider value={{ user, login, logout }}>{children}</AuthContext.Provider>;
+};
+
+export default AuthProvider;
 interface AuthContextType {
   user: any;
   setUser: (user: any) => void;
