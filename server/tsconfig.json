@@ -19,3 +19,13 @@
   "include": ["src"],                // ✅ Only compile files inside 'src'
   "exclude": ["node_modules", "dist"] // ✅ Ignore 'node_modules' & 'dist' from compilation
 }
+{
+  "compilerOptions": {
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "target": "ESNext",
+    "outDir": "./dist",
+    "rootDir": "./src",
+    "strict": true
+  }
+}
