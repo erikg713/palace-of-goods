@@ -1,13 +1,13 @@
-Here's how you can improve the `server/README.md` file:
+Here are some suggestions to improve the `server/README.md` file:
 
-1. **Add a Table of Contents:** This helps users navigate through the document easily.
-2. **Add Sections for Description, Prerequisites, and Setup:** Provide a brief overview of the project, any prerequisites, and detailed setup instructions.
-3. **Code Block Formatting:** Use code blocks for commands.
-4. **Add Usage Instructions:** Explain how to run and use the backend.
-5. **Add Contribution Guidelines:** If you want others to contribute, provide guidelines.
-6. **Add License Information:** Specify the license under which the project is distributed.
+1. Add a Table of Contents to help users navigate through the document easily.
+2. Add sections for Description, Prerequisites, and Setup to provide an overview of the project and detailed setup instructions.
+3. Use code blocks for commands to improve readability.
+4. Add Usage Instructions to explain how to run and use the backend.
+5. Add Contribution Guidelines if you want others to contribute.
+6. Add License Information to specify the license under which the project is distributed.
 
-Here is an improved version of the file:
+Here's an improved version:
 
 ```markdown
 # BACKEND SETUP EXPRESS AND REACT-TYPESCRIPT #
@@ -66,21 +66,3 @@ This project is licensed under the MIT License - see the [LICENSE](../LICENSE) f
 ```
 
 Consider adding more specific sections relevant to your project as needed.
-
-
-# BACKEND SETUP EXPRESS AND REACT-TYPESCRIPT #
----
-INSTALL DEPENDENCIES 
-npm init -y
-npm install @pinetwork-js/sdk
-npm install express cors dotenv mongoose jsonwebtoken bcryptjs
-npm install --save-dev typescript
-npm install ts-node
-npm install nodemon
-npm install @types/express 
-npm install @types/cors 
-npm install @types/jsonwebtoken
-npm install @types/bcryptjs
-npm install @types/mongoose
-npm install @types/node
----
