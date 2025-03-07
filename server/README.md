@@ -39,17 +39,19 @@ cd palace-of-goods/server
 ### Install Dependencies
 ```bash
 npm init -y
-npm install @pinetwork-js/sdk
-npm install express cors dotenv mongoose jsonwebtoken bcryptjs
+npm install @pinetwork-js/sdk@latest
+npm install express@latest
+npm install cors@latest
+npm install jsonwebtoken@latest
 npm install --save-dev typescript
-npm install ts-node
-npm install nodemon
-npm install @types/express 
-npm install @types/cors 
-npm install @types/jsonwebtoken
-npm install @types/bcryptjs
-npm install @types/mongoose
-npm install @types/node
+npm install ts-node@latest
+npm install nodemon@latest
+npm install @types/express@latest 
+npm install @types/cors@latest 
+npm install @types/jsonwebtoken@latest
+npm install @types/bcryptjs@latesr
+npm install --save-dev @types/mongoose@latest
+npm install @types/node@latest
 ```
 
 ## Usage
