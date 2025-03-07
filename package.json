@@ -3,9 +3,14 @@
   "version": "1.0.0",
   "description": "Palace of Goods - An e-commerce Web3 app built for Pi Network!",
   "main": "server.ts",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/erikg713/palace-of-goods.git"
+  },
   "scripts": {
     "start": "node server.ts",
-    "dev": "nodemon server.ts"
+    "dev": "nodemon server.ts",
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
     "cors": "^2.8.5",
