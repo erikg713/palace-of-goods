@@ -2,6 +2,7 @@
 ---
 INSTALL DEPENDENCIES 
 npm init -y
+npm install @pinetwork-js/sdk
 npm install express cors dotenv mongoose jsonwebtoken bcryptjs
 npm install --save-dev typescript
 npm install ts-node
