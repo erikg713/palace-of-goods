@@ -1,4 +1,4 @@
-Here's how you can improve the `client/README.md` file:
+Here are some suggestions to improve the `client/README.md` file:
 
 1. **Add a Table of Contents:** Helps users navigate through the document.
 2. **Add Sections for Description, Prerequisites, and Setup:** Provide an overview of the project, any prerequisites, and detailed setup instructions.
@@ -58,14 +58,3 @@ This project is licensed under the MIT License - see the [LICENSE](../LICENSE) f
 ```
 
 Consider adding more specific sections relevant to your project as needed.
-
-
-
-# INSTALL DEPENDENCIES FOR CLIENT SIDE #
----
-npm install serve-favicon
-npm create vite@latest frontend --template react-ts
-cd frontend
-npm install axios react-query react-router-dom
----
-
