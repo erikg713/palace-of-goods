@@ -103,7 +103,10 @@ Install Dependencies:
 ```bash
 cd server
 npm install
-npm install node-cron pi-sdk web3 dotenv express fs moment
+npm install node-cron
+npm install @pinetwork-js/sdk
+npm install web3
+npm install dotenv express fs moment
 npx terser js/main.js -o js/main.min.js --compress --mangle
 npx clean-css -o css/styles.min.css css/styles.css
 npm run migrate  # Apply database migrations
@@ -118,8 +121,8 @@ Install Dependencies:
 
 ```bash
 cd client
-npm install 
-npm install axios react-query react-router-dom pi-sdk
+npm install react-router-dom
+npm install axios react-query
 node sitemap.ts
 npm start
 ```
@@ -132,14 +135,7 @@ Frontend will be running at http://localhost:3000.
 
 Create a `.env` file in the server directory and add:
 
-```plaintext
-PORT=5000
-DATABASE_URL=postgresql://username:password@localhost:5432/palace_of_goods
-JWT_SECRET=your_jwt_secret
-PI_NETWORK_API_KEY=your_pi_api_key
-CLOUDINARY_CLOUD_NAME=your_cloudinary_name
-CLOUDINARY_API_KEY=your_cloudinary_api_key
-CLOUDINARY_API_SECRET=your_cloudinary_api_secret
+
 ```
 
 ---
@@ -185,47 +181,6 @@ docker run -d -p 5000:5000 --env-file .env palace-of-goods-server
 
 ### Use Docker Compose for Backend & Database
 
-Create a `docker-compose.yml` file in the root directory:
-
-```yaml
-version: "3.8"
-
-services:
-  backend:
-    build: ./server
-    ports:
-      - "5000:5000"
-    env_file:
-      - ./server/.env
-    depends_on:
-      - postgres
-
-  postgres:
-    image: postgres:14
-    container_name: palace-of-goods-db
-    restart: always
-    ports:
-      - "5432:5432"
-    environment:
-      POSTGRES_USER: admin
-      POSTGRES_PASSWORD: secret
-      POSTGRES_DB: palace_of_goods
-    volumes:
-      - pgdata:/var/lib/postgresql/data
-
-volumes:
-  pgdata:
-```
-
-Start the Docker Containers:
-
-```bash
-docker-compose up -d
-```
-
-✅ Now, both the backend and database run inside Docker!
-
----
 
 ## Future Roadmap
 
