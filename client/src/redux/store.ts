@@ -1,4 +1,4 @@
-import { configureStore } from "@reduxjs/toolkit";
+import { configureStore, MiddlewareArray } from "@reduxjs/toolkit";
 import cartReducer from "./cartSlice";
 import { useDispatch, useSelector, TypedUseSelectorHook } from "react-redux";
 
@@ -10,7 +10,7 @@ const store = configureStore({
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
       serializableCheck: false, // Prevent Redux Toolkit warnings about non-serializable state
-    }),
+    }) as MiddlewareArray, // Ensure type safety
   devTools: process.env.NODE_ENV !== "production", // Enable DevTools only in development
 });
 
