@@ -74,7 +74,7 @@ Ensure you have the following installed on your system:
 - Node.js (16+) & npm/yarn
 - MongoDB
 - Docker (Optional for deployment)
-
+npm install mongoose next-auth bcryptjs jsonwebtoken ethers @types/jsonwebtoken @types/bcryptjs
 ---
 
 ## Installation
