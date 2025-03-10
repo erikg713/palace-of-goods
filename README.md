@@ -50,11 +50,33 @@ Palace of Goods is a decentralized marketplace that allows users to buy and sell
 - Docker – Containerized development & production
 - PM2 – Process management for production
 
-### Frontend (React.js with TypeScript)
+### Frontend (React.js/Next.js with TypeScript)
 
 - React.js (TypeScript) – Type-safe and scalable UI
 - Redux Toolkit (Future) – State management for better UX
 - Material-UI – Modern component-based UI framework
+/palace-of-goods
+│── /lib
+│   ├── mongodb.ts   <-- Database connection
+│── /models
+│   ├── User.ts      <-- Mongoose User schema
+│── /pages
+│   ├── /api
+│   │   ├── /auth
+│   │   │   ├── register.ts   <-- User Registration API
+│   │   │   ├── login.ts      <-- User Login API
+│   │   │   ├── web3-login.ts <-- Web3 Login API
+│   ├── /auth
+│   │   ├── login.tsx         <-- Login Page
+│   │   ├── register.tsx      <-- Register Page
+│── /components
+│   ├── AuthForm.tsx  <-- Authentication Form Component
+│── /styles
+│── .env.local
+│── next.config.js
+│── package.json
+│── tsconfig.json
+
 
 ### Blockchain & Web3
 
