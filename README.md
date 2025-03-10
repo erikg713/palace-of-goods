@@ -64,6 +64,8 @@ Palace of Goods is a decentralized marketplace that allows users to buy and sell
 ---
 
 ## Getting Started
+npx create-next-app@latest palace-of-goods --typescript
+cd palace-of-goods
 
 ### Prerequisites
 
