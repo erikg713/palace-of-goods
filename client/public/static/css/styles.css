@@ -1,20 +1,29 @@
-/* Reset CSS */
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
-
-/* Body Styles */
+/* Global Styles */
 body {
-    font-family: 'Arial', sans-serif;
-    background-color: #f4f4f4;
-    color: #333;
+  font-family: "Arial", sans-serif;
+  margin: 0;
+  padding: 0;
+  background-color: #f4f4f4;
+  color: #333;
 }
 
-/* Utility Classes */
-.container {
-    width: 80%;
-    margin: auto;
-    overflow: hidden;
+/* Header Styles */
+h1 {
+  color: #0f62fe;
+  text-align: center;
+  padding: 20px;
+}
+
+/* Button Styling */
+button {
+  background-color: #0f62fe;
+  color: white;
+  padding: 10px 15px;
+  border: none;
+  cursor: pointer;
+  border-radius: 5px;
+}
+
+button:hover {
+  background-color: #0043ce;
 }
