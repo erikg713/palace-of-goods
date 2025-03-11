@@ -1,103 +1,68 @@
 import axios from "axios";
 
+// ✅ Base API URL (from .env)
 const API_URL = process.env.REACT_APP_API_URL || "https://your-backend-url.com/api";
 
-// 🔐 Helper: Get Auth Headers
+// ✅ Helper: Get Auth Headers
 const getAuthHeaders = () => ({
-  Authorization: `Bearer ${sessionStorage.getItem("token")}`,
+  Authorization: `Bearer ${localStorage.getItem("token")}`,
 });
 
-// 🛍️ Products API
-export const getProducts = async () => {
-  try {
-    const response = await axios.get(`${API_URL}/products`);
-    return response.data;
-  } catch (error) {
-    console.error("Error fetching products:", error);
-    throw error;
-  }
+// ✅ Centralized Error Handler
+const handleRequestError = (error: any) => {
+  console.error("API Error:", error.response?.data?.message || error.message);
+  throw error.response?.data || error;
 };
 
-export const getProduct = async (id: string) => {
-  try {
-    const response = await axios.get(`${API_URL}/products/${id}`);
-    return response.data;
-  } catch (error) {
-    console.error(`Error fetching product ${id}:`, error);
-    throw error;
-  }
-};
+// 🔄 Set up Axios Interceptors for Authenticated Requests
+axios.interceptors.request.use(
+  (config) => {
+    const token = localStorage.getItem("token");
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
+  },
+  (error) => Promise.reject(error)
+);
 
-export const addToCart = async (product: { id: string; quantity: number }) => {
-  try {
-    const response = await axios.post(`${API_URL}/cart`, product);
-    return response.data;
-  } catch (error) {
-    console.error("Error adding to cart:", error);
-    throw error;
-  }
-};
-
-// 💰 Payments API
-export const createPayment = async (amount: number, userId: string) => {
-  try {
-    const response = await axios.post(`${API_URL}/payment/create`, { amount, userId });
-    return response.data;
-  } catch (error) {
-    console.error("Error creating payment:", error);
-    throw error;
-  }
-};
-
-export const verifyPayment = async (paymentId: string) => {
-  try {
-    const response = await axios.post(`${API_URL}/payment/verify`, { paymentId });
-    return response.data;
-  } catch (error) {
-    console.error("Error verifying payment:", error);
-    throw error;
-  }
-};
-
-// 🔐 Authentication API
+// 🔐 **Authentication API**
 export const signup = async (username: string, email: string, password: string) => {
   try {
-    const response = await axios.post(`${API_URL}/users/signup`, { username, email, password });
-    return response.data;
+    const { data } = await axios.post(`${API_URL}/users/signup`, { username, email, password });
+    return data;
   } catch (error) {
-    console.error("Error signing up:", error);
-    throw error;
+    handleRequestError(error);
   }
 };
 
 export const login = async (email: string, password: string) => {
   try {
-    const response = await axios.post(`${API_URL}/users/login`, { email, password });
-    return response.data;
+    const { data } = await axios.post(`${API_URL}/users/login`, { email, password });
+    localStorage.setItem("token", data.token);
+    localStorage.setItem("user", JSON.stringify(data.user));
+    return data;
   } catch (error) {
-    console.error("Error logging in:", error);
-    throw error;
+    handleRequestError(error);
   }
 };
 
-// 👤 User Profile API
+// 👤 **User Profile API**
 export const getUserProfile = async () => {
   try {
-    const response = await axios.get(`${API_URL}/users/profile`, { headers: getAuthHeaders() });
-    return response.data;
+    const { data } = await axios.get(`${API_URL}/users/profile`);
+    return data;
   } catch (error) {
-    console.error("Error fetching user profile:", error);
-    throw error;
+    handleRequestError(error);
   }
 };
 
-export const updateUserProfile = async (data: { name?: string; email?: string }) => {
+export const updateUserProfile = async (profileData: { name?: string; email?: string }) => {
   try {
-    const response = await axios.put(`${API_URL}/users/profile`, data, { headers: getAuthHeaders() });
-    return response.data;
+    const { data } = await axios.put(`${API_URL}/users/profile`, profileData);
+    return data;
   } catch (error) {
-    console.error("Error updating profile:", error);
-    throw error;
+    handleRequestError(error);
   }
 };
 
@@ -106,37 +71,85 @@ export const uploadProfilePicture = async (file: File) => {
   formData.append("profilePic", file);
 
   try {
-    const response = await axios.post(`${API_URL}/users/profile/picture`, formData, {
-      headers: {
-        "Content-Type": "multipart/form-data",
-        ...getAuthHeaders(),
-      },
+    const { data } = await axios.post(`${API_URL}/users/profile/picture`, formData, {
+      headers: { "Content-Type": "multipart/form-data" },
     });
-    return response.data;
+    return data;
   } catch (error) {
-    console.error("Error uploading profile picture:", error);
-    throw error;
+    handleRequestError(error);
   }
 };
 
-// 📦 Orders API
+// 🛍️ **Products API**
+export const getProducts = async () => {
+  try {
+    const { data } = await axios.get(`${API_URL}/products`);
+    return data;
+  } catch (error) {
+    handleRequestError(error);
+  }
+};
+
+export const getProduct = async (id: string) => {
+  try {
+    const { data } = await axios.get(`${API_URL}/products/${id}`);
+    return data;
+  } catch (error) {
+    handleRequestError(error);
+  }
+};
+
+export const addToCart = async (product: { id: string; quantity: number }) => {
+  try {
+    const { data } = await axios.post(`${API_URL}/cart`, product);
+    return data;
+  } catch (error) {
+    handleRequestError(error);
+  }
+};
+
+// 💰 **Payments API**
+export const createPayment = async (amount: number, userId: string) => {
+  try {
+    const { data } = await axios.post(`${API_URL}/payment/create`, { amount, userId });
+    return data;
+  } catch (error) {
+    handleRequestError(error);
+  }
+};
+
+export const verifyPayment = async (paymentId: string) => {
+  try {
+    const { data } = await axios.post(`${API_URL}/payment/verify`, { paymentId });
+    return data;
+  } catch (error) {
+    handleRequestError(error);
+  }
+};
+
+// 📦 **Orders API**
 export const getUserOrders = async () => {
   try {
-    const response = await axios.get(`${API_URL}/orders`, { headers: getAuthHeaders() });
-    return response.data;
+    const { data } = await axios.get(`${API_URL}/orders`);
+    return data;
   } catch (error) {
-    console.error("Error fetching user orders:", error);
-    throw error;
+    handleRequestError(error);
   }
 };
 
-// 🔄 Session API
+// 🔄 **Session API**
 export const checkSession = async () => {
   try {
-    const response = await axios.get(`${API_URL}/users/session`, { headers: getAuthHeaders() });
-    return response.data;
+    const { data } = await axios.get(`${API_URL}/users/session`);
+    return data;
   } catch (error) {
-    console.error("Error checking session:", error);
-    throw error;
+    handleRequestError(error);
   }
+};
+
+// 🔑 **Logout**
+export const logout = () => {
+  localStorage.removeItem("token");
+  localStorage.removeItem("user");
+  window.location.reload(); // Ensures the app resets to a logged-out state
 };
