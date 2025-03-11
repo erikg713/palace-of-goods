@@ -1,3 +1,7 @@
 RewriteEngine on
-RewriteCond %{HTTP_REFERER} !^https://(www\.)?palaceofgoods.com/ [NC]
-RewriteRule \.(jpg|jpeg|png|gif|webp)$ - [F]
+RewriteBase /
+
+# Prevent Hotlinking of Images
+RewriteCond %{HTTP_REFERER} !^$  # Allow direct access (e.g., users opening images in browser)
+RewriteCond %{HTTP_REFERER} !^https://(www\.)?palaceofgoods\.com/ [NC]
+RewriteRule \.(jpe?g|png|gif|webp|bmp|svg|ico)$ - [F,NC]
