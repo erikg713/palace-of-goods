@@ -3,7 +3,7 @@ import { AppBar, Toolbar, Typography, Button, Avatar } from "@mui/material";
 import { useContext } from "react";
 import { AuthContext } from "../context/AuthContext";
 
-const Navbar = () => {
+const MaterialNavbar = () => {
   const { user, logout } = useContext(AuthContext);
 
   return (
@@ -37,20 +37,4 @@ const Navbar = () => {
   );
 };
 
-export default Navbar;
-import React, { useContext } from "react";
-import { AuthContext } from "../context/AuthContext";
-import PiAuth from "./PiAuth";
-
-const Navbar: React.FC = () => {
-  const { user } = useContext(AuthContext);
-
-  return (
-    <nav>
-      <h1>Palace of Goods</h1>
-      {user ? <p>Welcome, {user.username}!</p> : <PiAuth />}
-    </nav>
-  );
-};
-
-export default Navbar;
+export default MaterialNavbar;
