@@ -1,84 +1,10 @@
-import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
-import { useContext } from "react";
-import { AuthProvider, AuthContext } from "./context/AuthContext";
-import { Routes, Route } from "react-router-dom";
-import Home from "./pages/Home";
-import Register from "./pages/Register";
-import Login from "./pages/Login";
-import Dashboard from "./pages/Dashboard";
-import PrivateRoute from "./components/PrivateRoute";
-import { Routes, Route } from "react-router-dom";
-import Home from "./pages/Home";
-import Register from "./pages/Register";
-import Login from "./pages/Login";
-import Dashboard from "./pages/Dashboard";
-import PrivateRoute from "./components/PrivateRoute";
-import { Routes, Route } from "react-router-dom";
-import Home from "./pages/Home";
-import Register from "./pages/Register";
-import Login from "./pages/Login";
-import Dashboard from "./pages/Dashboard";
-import AdminDashboard from "./pages/AdminDashboard";
-import PrivateRoute from "./components/PrivateRoute";
-import PrivateAdminRoute from "./components/PrivateAdminRoute";
 import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "./context/AuthContext";
-import MaterialNavbar from "./components/MaterialNavbar";
+import Navbar from "./components/Navbar";
+import PrivateRoute from "./components/PrivateRoute";
+import PrivateAdminRoute from "./components/PrivateAdminRoute";
 
-const App: React.FC = () => {
-  return (
-    <AuthProvider>
-      <Router>
-        <MaterialNavbar />
-        <Routes>
-          {/* Define your routes */}
-        </Routes>
-      </Router>
-    </AuthProvider>
-  );
-};
-
-export default App;
-const App = () => {
-  return (
-    <Routes>
-      <Route path="/" element={<Home />} />
-      <Route path="/register" element={<Register />} />
-      <Route path="/login" element={<Login />} />
-      <Route path="/dashboard" element={<PrivateRoute><Dashboard /></PrivateRoute>} />
-      <Route path="/admin" element={<PrivateAdminRoute><AdminDashboard /></PrivateAdminRoute>} />
-    </Routes>
-  );
-};
-
-export default App;
-
-const App = () => {
-  return (
-    <Routes>
-      <Route path="/" element={<Home />} />
-      <Route path="/register" element={<Register />} />
-      <Route path="/login" element={<Login />} />
-      {/* Protected Route */}
-      <Route path="/dashboard" element={<PrivateRoute><Dashboard /></PrivateRoute>} />
-    </Routes>
-  );
-};
-
-export default App;
-const App = () => {
-  return (
-    <Routes>
-      <Route path="/" element={<Home />} />
-      <Route path="/register" element={<Register />} />
-      <Route path="/login" element={<Login />} />
-      <Route path="/dashboard" element={<PrivateRoute><Dashboard /></PrivateRoute>} />
-    </Routes>
-  );
-};
-
-export default App;
 // Pages
 import Home from "./pages/Home";
 import Login from "./pages/Login";
@@ -89,17 +15,9 @@ import Orders from "./pages/Orders";
 import AdminOrders from "./pages/AdminOrders";
 import ProductDetails from "./pages/ProductDetails";
 import Cart from "./pages/Cart";
-
-// Components
-import Navbar from "./components/Navbar";
+import AdminDashboard from "./pages/AdminDashboard";
 import PiAuth from "./components/PiAuth";
 import PiPayment from "./components/PiPayment";
-
-// Protected Route Wrapper
-const ProtectedRoute = ({ children }: { children: JSX.Element }) => {
-  const { user } = useContext(AuthContext);
-  return user ? children : <Navigate to="/login" />;
-};
 
 function App() {
   return (
@@ -114,20 +32,20 @@ function App() {
           <Route path="/signup" element={<Signup />} />
 
           {/* Protected Routes */}
-          <Route path="/checkout" element={<ProtectedRoute><Checkout /></ProtectedRoute>} />
-          <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
-          <Route path="/orders" element={<ProtectedRoute><Orders /></ProtectedRoute>} />
-          <Route path="/admin/orders" element={<ProtectedRoute><AdminOrders /></ProtectedRoute>} />
+          <Route path="/checkout" element={<PrivateRoute><Checkout /></PrivateRoute>} />
+          <Route path="/dashboard" element={<PrivateRoute><Dashboard /></PrivateRoute>} />
+          <Route path="/orders" element={<PrivateRoute><Orders /></PrivateRoute>} />
+          <Route path="/admin/orders" element={<PrivateAdminRoute><AdminOrders /></PrivateAdminRoute>} />
 
-          {/* Pi Network DApp Section Inside Dashboard */}
+          {/* Pi Network DApp Inside Dashboard */}
           <Route path="/dashboard/pi" element={
-            <ProtectedRoute>
+            <PrivateRoute>
               <div>
                 <h1>Pi Network DApp</h1>
                 <PiAuth />
                 <PiPayment />
               </div>
-            </ProtectedRoute>
+            </PrivateRoute>
           } />
         </Routes>
       </Router>
