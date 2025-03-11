@@ -1,7 +1,17 @@
 import React from "react";
 import { useAppSelector, useAppDispatch } from "../store";
 import { removeFromCart, clearCart, updateQuantity } from "../cartSlice";
+import cartIcon from "../assets/icons/cart-icon.svg";
 
+const CartButton = () => {
+  return (
+    <button>
+      <img src={cartIcon} alt="Cart" width="24" height="24" />
+    </button>
+  );
+};
+
+export default CartButton;
 const Cart: React.FC = () => {
   const cartItems = useAppSelector((state) => state.cart.items);
   const dispatch = useAppDispatch();
