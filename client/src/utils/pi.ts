@@ -1,22 +1,32 @@
-import { Pi } from "pi-sdk";
+// Check if Pi SDK is available in the browser
+const Pi = (window as any).Pi;
 
-export const authenticatePiUser = async () => {
-  Pi.init({ version: "2.0", sandbox: true });
-  try {
-    const scopes = ["username", "payments"];
-    const user = await Pi.authenticate(scopes);
-    return user;
-  } catch (error) {
-    console.error("Pi Network Authentication failed:", error);
-    return null;
+export interface PiUser {
+  uid: string;
+  username: string;
+}
+
+export interface PiPayment {
+  identifier: string;
+  amount: number;
+  memo: string;
+  metadata: object;
+  status: string;
+}
+
+// **Initialize Pi Network SDK**
+export const initializePi = () => {
+  if (!Pi) {
+    console.error("Pi Network SDK not found. Make sure to load the SDK in index.html.");
+    return;
   }
+  Pi.init({ version: "2.0", sandbox: true }); // Set sandbox to false for mainnet
 };
 
-import { PiNetwork } from "@pinetwork-js/sdk"; // Hypothetical SDK (Replace with actual one)
-
-const Pi = (window as any).Pi; // Access Pi Network SDK in the browser
-
+// **Authenticate Pi User**
 export const authenticatePiUser = async (): Promise<PiUser | null> => {
+  if (!Pi) return null;
+
   try {
     const user = await Pi.authenticate(["username", "uid"]);
     return { uid: user.uid, username: user.username };
@@ -26,13 +36,20 @@ export const authenticatePiUser = async (): Promise<PiUser | null> => {
   }
 };
 
-export const initiatePiPayment = async (amount: number, memo: string, metadata = {}): Promise<PiPayment | null> => {
+// **Initiate Pi Payment**
+export const initiatePiPayment = async (
+  amount: number,
+  memo: string,
+  metadata: object = {}
+): Promise<PiPayment | null> => {
+  if (!Pi) return null;
+
   try {
     const payment = await Pi.createPayment({
       amount,
       memo,
       metadata,
-      uid: (window as any).Pi.currentUser?.uid,
+      uid: Pi.currentUser?.uid,
     });
 
     return {
