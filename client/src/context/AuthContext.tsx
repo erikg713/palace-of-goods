@@ -81,3 +81,22 @@ export const useAuth = (): AuthContextType => {
   }
   return context;
 };
+
+import { createContext, useState } from "react";
+import { AuthContextType } from "../types/authTypes";
+
+export const AuthContext = createContext<AuthContextType | null>(null);
+
+export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
+  const [user, setUser] = useState<User | null>(null);
+
+  const logout = () => {
+    setUser(null);
+  };
+
+  return (
+    <AuthContext.Provider value={{ user, setUser, logout, isAuthenticated: !!user }}>
+      {children}
+    </AuthContext.Provider>
+  );
+};
