@@ -6,7 +6,11 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
 
     <!-- Security Headers -->
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://trusted-cdn.com; style-src 'self' 'unsafe-inline' https://trusted-styles.com; img-src 'self' data:; font-src 'self'; connect-src 'self' https://api.palaceofgoods.com;">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; 
+          script-src 'self' https://trusted-cdn.com https://sdk.minepi.com; 
+          style-src 'self' 'unsafe-inline' https://trusted-styles.com; 
+          img-src 'self' data:; font-src 'self'; 
+          connect-src 'self' https://api.palaceofgoods.com;">
     <meta http-equiv="Permissions-Policy" content="geolocation=(), microphone=(), camera=(), payment=(self)" />
     <meta name="referrer" content="strict-origin-when-cross-origin" />
 
@@ -34,6 +38,20 @@
 
     <!-- CSS -->
     <link rel="stylesheet" href="%PUBLIC_URL%/css/styles.css" />
+
+    <!-- Pi Network SDK -->
+    <script src="https://sdk.minepi.com/pi-sdk.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            console.log("%cWelcome to Palace of Goods!", "color: #0f62fe; font-size: 16px; font-weight: bold;");
+            if (window.Pi) {
+                Pi.init({ version: "2.0", sandbox: true });
+                console.log("✅ Pi Network SDK initialized successfully.");
+            } else {
+                console.warn("⚠️ Pi Network SDK not loaded.");
+            }
+        });
+    </script>
 
     <!-- JavaScript -->
     <script defer src="%PUBLIC_URL%/js/main.js"></script>
