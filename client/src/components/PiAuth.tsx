@@ -1,7 +1,38 @@
 import React, { useEffect, useState, useContext } from "react";
 import { Pi } from "pi-sdk"; // Ensure you have the correct Pi SDK installed
 import { AuthContext } from "../context/AuthContext";
+import React, { useState } from "react";
+import { authenticatePiUser } from "../utils/pi";
+import { useAuth } from "../context/AuthContext";
 
+const PiAuth: React.FC = () => {
+  const { user, login, logout } = useAuth();
+  const [loading, setLoading] = useState(false);
+
+  const handlePiLogin = async () => {
+    setLoading(true);
+    const piUser = await authenticatePiUser();
+    if (piUser) login(piUser);
+    setLoading(false);
+  };
+
+  return (
+    <div>
+      {user ? (
+        <>
+          <h2>Welcome, {user.username}!</h2>
+          <button onClick={logout}>Logout</button>
+        </>
+      ) : (
+        <button onClick={handlePiLogin} disabled={loading}>
+          {loading ? "Logging in..." : "Login with Pi Network"}
+        </button>
+      )}
+    </div>
+  );
+};
+
+export default PiAuth;
 const PiAuth: React.FC = () => {
   const { user, login, logout } = useContext(AuthContext);
   const [loading, setLoading] = useState(false);
