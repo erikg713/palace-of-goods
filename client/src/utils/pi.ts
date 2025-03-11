@@ -1,3 +1,17 @@
+import { Pi } from "pi-sdk";
+
+export const authenticatePiUser = async () => {
+  Pi.init({ version: "2.0", sandbox: true });
+  try {
+    const scopes = ["username", "payments"];
+    const user = await Pi.authenticate(scopes);
+    return user;
+  } catch (error) {
+    console.error("Pi Network Authentication failed:", error);
+    return null;
+  }
+};
+
 import { PiNetwork } from "@pinetwork-js/sdk"; // Hypothetical SDK (Replace with actual one)
 
 const Pi = (window as any).Pi; // Access Pi Network SDK in the browser
