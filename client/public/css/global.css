@@ -75,7 +75,13 @@ input, textarea {
   button {
     background-color: #444;
   }
-
+.cart-icon {
+  background-image: url("../assets/icons/cart-icon.svg");
+  width: 24px;
+  height: 24px;
+  display: inline-block;
+  background-size: contain;
+}
   button:hover {
     background-color: #666;
   }
