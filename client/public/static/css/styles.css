@@ -27,3 +27,16 @@ button {
 button:hover {
   background-color: #0043ce;
 }
+@font-face {
+    font-family: 'CustomFont';
+    src: url('../fonts/custom-font.woff2') format('woff2'),
+         url('../fonts/custom-font.woff') format('woff'),
+         url('../fonts/custom-font.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+/* Apply the custom font */
+body {
+    font-family: 'CustomFont', sans-serif;
+}
