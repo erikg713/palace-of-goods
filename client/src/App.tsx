@@ -19,23 +19,27 @@ import AdminDashboard from "./pages/AdminDashboard";
 import PiAuth from "./components/PiAuth";
 import PiPayment from "./components/PiPayment";
 
-function App() {
+const App = () => {
   return (
     <AuthProvider>
       <Router>
         <Navbar />
         <Routes>
+          {/* Public Routes */}
           <Route path="/" element={<Home />} />
           <Route path="/product/:id" element={<ProductDetails />} />
           <Route path="/cart" element={<Cart />} />
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
 
-          {/* Protected Routes */}
+          {/* Protected User Routes */}
           <Route path="/checkout" element={<PrivateRoute><Checkout /></PrivateRoute>} />
           <Route path="/dashboard" element={<PrivateRoute><Dashboard /></PrivateRoute>} />
           <Route path="/orders" element={<PrivateRoute><Orders /></PrivateRoute>} />
+
+          {/* Protected Admin Routes */}
           <Route path="/admin/orders" element={<PrivateAdminRoute><AdminOrders /></PrivateAdminRoute>} />
+          <Route path="/admin" element={<PrivateAdminRoute><AdminDashboard /></PrivateAdminRoute>} />
 
           {/* Pi Network DApp Inside Dashboard */}
           <Route path="/dashboard/pi" element={
@@ -51,6 +55,6 @@ function App() {
       </Router>
     </AuthProvider>
   );
-}
+};
 
 export default App;
