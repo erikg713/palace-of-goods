@@ -1,23 +1,29 @@
-const express = require('express');
-const favicon = require('serve-favicon');
-const path = require('path');
+from PIL import Image
 
-const app = express();
-const PORT = 3000;
 
-// Serve the favicon from the "public" folder
-app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
 
-// Example route
-app.get('/', (req, res) => {
-  res.send('<h1>WELCOME 2 PALACE OF GOODS!!!</h1><p>Your favicon should appear in the browser tab.</p>');
-});
+# Define the input and output file paths
 
-// Handle missing favicon.ico requests (optional)
-app.get('/favicon.ico', (req, res) => res.status(204).end());
+input_image_path = "/mnt/data/file-3g4LFwBM9RwLq2zDdAevF3"
 
-// Start the server
-app.listen(PORT, () => {
-  console.log(`Server is running on http://localhost:${PORT}`);
-});
+output_favicon_path = "/mnt/data/favicon.ico"
 
+
+
+# Open the image
+
+image = Image.open(input_image_path)
+
+
+
+# Convert the image to ICO format with multiple standard favicon sizes
+
+favicon_sizes = [(16, 16), (32, 32), (48, 48), (64, 64), (128, 128), (256, 256)]
+
+image.save(output_favicon_path, format="ICO", sizes=favicon_sizes)
+
+
+
+# Provide the favicon file for download
+
+output_favicon_path
