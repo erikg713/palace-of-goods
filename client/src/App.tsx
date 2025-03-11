@@ -21,7 +21,25 @@ import Dashboard from "./pages/Dashboard";
 import AdminDashboard from "./pages/AdminDashboard";
 import PrivateRoute from "./components/PrivateRoute";
 import PrivateAdminRoute from "./components/PrivateAdminRoute";
+import React from "react";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { AuthProvider } from "./context/AuthContext";
+import MaterialNavbar from "./components/MaterialNavbar";
 
+const App: React.FC = () => {
+  return (
+    <AuthProvider>
+      <Router>
+        <MaterialNavbar />
+        <Routes>
+          {/* Define your routes */}
+        </Routes>
+      </Router>
+    </AuthProvider>
+  );
+};
+
+export default App;
 const App = () => {
   return (
     <Routes>
