@@ -139,3 +139,21 @@ const PiPayment: React.FC<{ amount: number; memo: string; onSuccess: () => void 
 };
 
 export default PiPayment;
+import { getPiPayment, approvePiPayment, completePiPayment } from "../api/payments";
+
+const handlePayment = async (paymentId: string) => {
+  try {
+    const payment = await getPiPayment(paymentId);
+    console.log("Payment Details:", payment);
+
+    const approved = await approvePiPayment(paymentId);
+    console.log("Payment Approved:", approved);
+
+    if (approved.status.developer_approved) {
+      const completed = await completePiPayment(paymentId, approved.transaction.txid);
+      console.log("Payment Completed:", completed);
+    }
+  } catch (error) {
+    console.error("Payment processing error:", error);
+  }
+};
