@@ -1,40 +1,41 @@
-import React from "react";
+import React, { useEffect } from "react";
 import ReactDOM from "react-dom/client";
 import { BrowserRouter } from "react-router-dom";
 import App from "./App";
+import { initializePi } from "./utils/pi";
 import { UserProvider } from "./context/UserContext";
 import { PaymentProvider } from "./context/PaymentContext";
 import AuthProvider from "./context/AuthContext";
 import StateManagement from "./redux/StateManagement";
 import "./styles/global.css";
-import React from "react";
-import ReactDOM from "react-dom/client";
-import App from "./App";
-import { initializePi } from "./utils/pi";
 
-initializePi(); // Initialize Pi Network SDK
-
-const root = ReactDOM.createRoot(document.getElementById("root") as HTMLElement);
-root.render(<App />);
 // Combine multiple providers into a single RootProvider to reduce nesting
-const RootProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => (
-  <StateManagement>
-    <UserProvider>
-      <PaymentProvider>
-        <AuthProvider>
-          {children}
-        </AuthProvider>
-      </PaymentProvider>
-    </UserProvider>
-  </StateManagement>
-);
+const RootProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  useEffect(() => {
+    initializePi(); // Initialize Pi Network SDK
+  }, []);
 
+  return (
+    <StateManagement>
+      <UserProvider>
+        <PaymentProvider>
+          <AuthProvider>
+            {children}
+          </AuthProvider>
+        </PaymentProvider>
+      </UserProvider>
+    </StateManagement>
+  );
+};
+
+// Ensure the root element exists
 const container = document.getElementById("root");
 if (!container) {
-  throw new Error("The root element was not found in the document.");
+  throw new Error("❌ The root element #root was not found in the document.");
 }
 
-ReactDOM.createRoot(container).render(
+const root = ReactDOM.createRoot(container);
+root.render(
   <React.StrictMode>
     <BrowserRouter>
       <RootProvider>
@@ -48,12 +49,12 @@ ReactDOM.createRoot(container).render(
 if ("serviceWorker" in navigator) {
   window.addEventListener("load", () => {
     navigator.serviceWorker
-      .register("/service-worker.ts")
+      .register("/service-worker.js") // Ensure correct service worker file
       .then((registration) => {
-        console.log("Service Worker registered with scope:", registration.scope);
+        console.log("✅ Service Worker registered with scope:", registration.scope);
       })
       .catch((error) => {
-        console.error("Service Worker registration failed:", error);
+        console.error("❌ Service Worker registration failed:", error);
       });
   });
-}
+});
