@@ -2,23 +2,31 @@
 <html lang="en">
 <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
 
     <!-- Security Headers -->
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self';">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self' https://api.palaceofgoods.com;">
+    <meta http-equiv="Permissions-Policy" content="geolocation=(), microphone=(), camera=()" />
     <meta name="referrer" content="no-referrer" />
-
-    <!-- SEO Optimization -->
-    <meta name="description" content="Palace of Goods - A Web3 Marketplace" />
-    <meta name="keywords" content="Web3, eCommerce, NFT Marketplace, Crypto Shopping" />
-    <meta name="author" content="Palace of Goods" />
     
+    <!-- SEO Optimization -->
+    <meta name="description" content="Palace of Goods - A Web3 eCommerce Marketplace for crypto and NFT shopping." />
+    <meta name="keywords" content="Web3, eCommerce, NFT Marketplace, Crypto Shopping, Blockchain" />
+    <meta name="author" content="Palace of Goods" />
+
+    <!-- Social Media Meta Tags (Open Graph) -->
+    <meta property="og:title" content="Palace of Goods - Web3 Marketplace" />
+    <meta property="og:description" content="Shop with cryptocurrency and NFTs in the most advanced Web3 marketplace." />
+    <meta property="og:image" content="%PUBLIC_URL%/assets/og-image.jpg" />
+    <meta property="og:url" content="https://palaceofgoods.com" />
+    <meta name="twitter:card" content="summary_large_image" />
+
     <!-- Progressive Web App (PWA) Support -->
     <link rel="icon" href="%PUBLIC_URL%/favicon.ico" />
-    <link rel="apple-touch-icon" href="%PUBLIC_URL%/logo192.png" />
+    <link rel="apple-touch-icon" href="%PUBLIC_URL%/assets/logo192.png" />
     <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
-    
+
     <!-- Theme & Colors -->
     <meta name="theme-color" content="#000000" />
 
