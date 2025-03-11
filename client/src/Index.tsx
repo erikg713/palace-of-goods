@@ -7,7 +7,15 @@ import { PaymentProvider } from "./context/PaymentContext";
 import AuthProvider from "./context/AuthContext";
 import StateManagement from "./redux/StateManagement";
 import "./styles/global.css";
+import React from "react";
+import ReactDOM from "react-dom/client";
+import App from "./App";
+import { initializePi } from "./utils/pi";
 
+initializePi(); // Initialize Pi Network SDK
+
+const root = ReactDOM.createRoot(document.getElementById("root") as HTMLElement);
+root.render(<App />);
 // Combine multiple providers into a single RootProvider to reduce nesting
 const RootProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => (
   <StateManagement>
