@@ -4,7 +4,32 @@ import { AuthProvider } from "./context/AuthContext";
 import Navbar from "./components/Navbar";
 import PrivateRoute from "./components/PrivateRoute";
 import PrivateAdminRoute from "./components/PrivateAdminRoute";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import PrivateAdminRoute from "./routes/PrivateAdminRoute";
+import AdminDashboard from "./pages/AdminDashboard";
+import UserDashboard from "./pages/UserDashboard";
+import LoginPage from "./pages/LoginPage";
 
+function App() {
+  return (
+    <Router>
+      <Routes>
+        <Route path="/login" element={<LoginPage />} />
+        <Route path="/dashboard" element={<UserDashboard />} />
+        <Route
+          path="/admin"
+          element={
+            <PrivateAdminRoute>
+              <AdminDashboard />
+            </PrivateAdminRoute>
+          }
+        />
+      </Routes>
+    </Router>
+  );
+}
+
+export default App;
 // Pages
 import Home from "./pages/Home";
 import Login from "./pages/Login";
