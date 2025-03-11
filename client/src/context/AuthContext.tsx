@@ -1,19 +1,19 @@
 import React, { createContext, useState, useEffect, useContext, ReactNode } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import { checkSession } from "../api"; // Function that verifies session
-import { authenticatePiUser } from "../utils/pi"; // For Pi Network authentication
-import { User, AuthContextType } from "../types/auth"; // Type Definitions
+import { checkSession } from "../api"; // API function to check if the session is valid
+import { authenticatePiUser } from "../utils/pi"; // Pi Network authentication function
+import { User, AuthContextType } from "../types/auth"; // Type definitions
 
-// **Define AuthContext**
+// **Create the AuthContext**
 const AuthContext = createContext<AuthContextType | null>(null);
 
 // **AuthProvider Component**
-export const AuthProvider = ({ children }: { children: ReactNode }) => {
+export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
   const navigate = useNavigate();
 
-  // **Persist Session on Reload**
+  // **Persist Session on Page Reload**
   useEffect(() => {
     const verifySession = async () => {
       const token = localStorage.getItem("token");
@@ -30,11 +30,12 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     verifySession();
   }, []);
 
-  // **Login Function**
+  // **Login Function (API)**
   const login = async (email: string, password: string) => {
     try {
       const { data } = await axios.post("http://localhost:5000/api/users/login", { email, password });
 
+      // Store user session
       localStorage.setItem("token", data.token);
       localStorage.setItem("user", JSON.stringify(data.user));
       axios.defaults.headers.common["Authorization"] = `Bearer ${data.token}`;
@@ -58,8 +59,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   // **Pi Network Authentication**
   const loginWithPi = async () => {
     try {
-      const piUser = await authenticatePiUser();
-      if (piUser) setUser(piUser);
+      const piUser = await authenticatePiUser(); // Function to authenticate with Pi Network
+      if (piUser) {
+        setUser(piUser);
+        localStorage.setItem("user", JSON.stringify(piUser));
+      }
     } catch (error) {
       console.error("Pi Network Authentication failed:", error);
     }
@@ -75,42 +79,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   );
 };
 
-// **Custom Hook to Use Auth Context**
+// **Custom Hook for Auth Context**
 export const useAuth = (): AuthContextType => {
   const context = useContext(AuthContext);
   if (!context) {
     throw new Error("useAuth must be used within an AuthProvider");
   }
   return context;
-};
-import React, { createContext, useState, ReactNode } from "react";
-
-interface User {
-  username: string;
-  profile_pic?: string;
-}
-
-interface AuthContextType {
-  user: User | null;
-  login: (userData: User) => void;
-  logout: () => void;
-}
-
-export const AuthContext = createContext<AuthContextType>({
-  user: null,
-  login: () => {},
-  logout: () => {},
-});
-
-export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  const [user, setUser] = useState<User | null>(null);
-
-  const login = (userData: User) => setUser(userData);
-  const logout = () => setUser(null);
-
-  return (
-    <AuthContext.Provider value={{ user, login, logout }}>
-      {children}
-    </AuthContext.Provider>
-  );
 };
