@@ -6,9 +6,9 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
 
     <!-- Security Headers -->
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self' https://api.palaceofgoods.com;">
-    <meta http-equiv="Permissions-Policy" content="geolocation=(), microphone=(), camera=()" />
-    <meta name="referrer" content="no-referrer" />
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://trusted-cdn.com; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self' https://api.palaceofgoods.com;">
+    <meta http-equiv="Permissions-Policy" content="geolocation=(), microphone=(), camera=(), payment=(self)" />
+    <meta name="referrer" content="strict-origin-when-cross-origin" />
     
     <!-- SEO Optimization -->
     <meta name="description" content="Palace of Goods - A Web3 eCommerce Marketplace for crypto and NFT shopping." />
@@ -43,4 +43,3 @@
     <div id="root"></div> <!-- React app mounts here -->
 </body>
 </html>
-<link rel="icon" href="%PUBLIC_URL%/favicon.ico" />
