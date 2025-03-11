@@ -2,4 +2,15 @@ User-agent: *
 Disallow: /admin/
 Disallow: /private/
 Allow: /
+
+# Prevent Crawling of Sensitive Files
+Disallow: /server/
+Disallow: /api/
+Disallow: /config/
+Disallow: /backend/
+
+# Allow Everything Else
+Allow: /
+
+# Sitemap Location
 Sitemap: https://yourwebsite.com/sitemap.xml
