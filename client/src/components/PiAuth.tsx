@@ -53,3 +53,16 @@ const PiAuth = () => {
 };
 
 export default PiAuth;
+import React from "react";
+import { Link } from "react-router-dom";
+
+const PiAuth: React.FC = () => {
+  return (
+    <div>
+      <p>Please log in:</p>
+      <Link to="/login">Login</Link> | <Link to="/signup">Signup</Link>
+    </div>
+  );
+};
+
+export default PiAuth;
