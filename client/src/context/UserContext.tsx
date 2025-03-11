@@ -13,10 +13,16 @@ interface UserContextType {
   setUser: (user: User | null) => void;
 }
 
-export const UserContext = createContext<UserContextType | null>(null);
+const defaultContextValue: UserContextType = {
+  user: null,
+  setUser: () => {}, // No-op function to avoid undefined errors
+};
+
+export const UserContext = createContext<UserContextType>(defaultContextValue);
 
 export const UserProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -25,10 +31,16 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
         setUser(data);
       } catch (error) {
         console.error("Error fetching user:", error);
+      } finally {
+        setLoading(false);
       }
     };
     fetchUser();
   }, []);
 
-  return <UserContext.Provider value={{ user, setUser }}>{children}</UserContext.Provider>;
+  return (
+    <UserContext.Provider value={{ user, setUser }}>
+      {!loading ? children : <p>Loading user...</p>}
+    </UserContext.Provider>
+  );
 };
