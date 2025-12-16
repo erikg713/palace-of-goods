@@ -9,28 +9,6 @@ import PrivateAdminRoute from "./routes/PrivateAdminRoute";
 import AdminDashboard from "./pages/AdminDashboard";
 import UserDashboard from "./pages/UserDashboard";
 import LoginPage from "./pages/LoginPage";
-
-function App() {
-  return (
-    <Router>
-      <Routes>
-        <Route path="/login" element={<LoginPage />} />
-        <Route path="/dashboard" element={<UserDashboard />} />
-        <Route
-          path="/admin"
-          element={
-            <PrivateAdminRoute>
-              <AdminDashboard />
-            </PrivateAdminRoute>
-          }
-        />
-      </Routes>
-    </Router>
-  );
-}
-
-export default App;
-// Pages
 import Home from "./pages/Home";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
