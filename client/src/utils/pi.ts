@@ -1,5 +1,5 @@
 // Check if Pi SDK is available in the browser
-const Pi = (window as any).Pi;
+const Pi = typeof window !== "undefined" ? (window as any).Pi : null;
 
 export interface PiUser {
   uid: string;
@@ -17,21 +17,33 @@ export interface PiPayment {
 // **Initialize Pi Network SDK**
 export const initializePi = () => {
   if (!Pi) {
-    console.error("Pi Network SDK not found. Make sure to load the SDK in index.html.");
+    console.error("❌ Pi Network SDK not found. Ensure the SDK is loaded in index.html.");
     return;
   }
-  Pi.init({ version: "2.0", sandbox: true }); // Set sandbox to false for mainnet
+
+  try {
+    if (!Pi.isInitialized) {
+      Pi.init({ version: "2.0", sandbox: true }); // Set sandbox to false for mainnet
+      console.log("✅ Pi Network SDK initialized.");
+    }
+  } catch (error) {
+    console.error("❌ Pi Network SDK initialization failed:", error);
+  }
 };
 
 // **Authenticate Pi User**
 export const authenticatePiUser = async (): Promise<PiUser | null> => {
-  if (!Pi) return null;
+  if (!Pi) {
+    console.error("❌ Pi SDK is not available.");
+    return null;
+  }
 
   try {
     const user = await Pi.authenticate(["username", "uid"]);
+    console.log("✅ Pi User authenticated:", user);
     return { uid: user.uid, username: user.username };
   } catch (error) {
-    console.error("Pi Network authentication failed:", error);
+    console.error("❌ Pi Network authentication failed:", error);
     return null;
   }
 };
@@ -42,7 +54,10 @@ export const initiatePiPayment = async (
   memo: string,
   metadata: object = {}
 ): Promise<PiPayment | null> => {
-  if (!Pi) return null;
+  if (!Pi) {
+    console.error("❌ Pi SDK is not available.");
+    return null;
+  }
 
   try {
     const payment = await Pi.createPayment({
@@ -52,6 +67,8 @@ export const initiatePiPayment = async (
       uid: Pi.currentUser?.uid,
     });
 
+    console.log("✅ Pi Payment initiated:", payment);
+
     return {
       identifier: payment.identifier,
       amount: payment.amount,
@@ -60,7 +77,7 @@ export const initiatePiPayment = async (
       status: payment.status,
     };
   } catch (error) {
-    console.error("Pi Network payment failed:", error);
+    console.error("❌ Pi Network payment failed:", error);
     return null;
   }
 };
