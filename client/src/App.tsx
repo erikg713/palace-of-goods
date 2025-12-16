@@ -4,8 +4,11 @@ import { AuthProvider } from "./context/AuthContext";
 import Navbar from "./components/Navbar";
 import PrivateRoute from "./components/PrivateRoute";
 import PrivateAdminRoute from "./components/PrivateAdminRoute";
-
-// Pages
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import PrivateAdminRoute from "./routes/PrivateAdminRoute";
+import AdminDashboard from "./pages/AdminDashboard";
+import UserDashboard from "./pages/UserDashboard";
+import LoginPage from "./pages/LoginPage";
 import Home from "./pages/Home";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";

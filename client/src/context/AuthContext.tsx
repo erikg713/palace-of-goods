@@ -21,7 +21,14 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       } catch {
         logout();
       }
-    };
+    };import { User } from "../models/user"; // Ensure correct import path
+
+export interface AuthContextType {
+  user: User | null; // Stores authenticated user data
+  setUser: React.Dispatch<React.SetStateAction<User | null>>; // Function to update user state
+  logout: () => void; // Function to log out user
+  isAuthenticated: boolean; // Derived authentication state (computed from `user !== null`)
+}
     verifySession();
   }, []);
 
@@ -73,4 +80,23 @@ export const useAuth = (): AuthContextType => {
     throw new Error("useAuth must be used within an AuthProvider");
   }
   return context;
+};
+
+import { createContext, useState } from "react";
+import { AuthContextType } from "../types/authTypes";
+
+export const AuthContext = createContext<AuthContextType | null>(null);
+
+export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
+  const [user, setUser] = useState<User | null>(null);
+
+  const logout = () => {
+    setUser(null);
+  };
+
+  return (
+    <AuthContext.Provider value={{ user, setUser, logout, isAuthenticated: !!user }}>
+      {children}
+    </AuthContext.Provider>
+  );
 };
