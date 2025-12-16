@@ -1,10 +1,21 @@
 import express from "express";
+import rateLimit from "express-rate-limit";
 import { verifyPiTransaction } from "./piPayments";
 
 const app = express();
 app.use(express.json());
 
-app.post("/api/verify-payment", async (req, res) => {
+// Set up rate limiter: max 100 requests per 15 minutes per IP for this endpoint
+const verifyPaymentLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 100, // limit each IP to 100 requests per windowMs
+  message: {
+    success: false,
+    message: "Too many requests, please try again later."
+  },
+});
+
+app.post("/api/verify-payment", verifyPaymentLimiter, async (req, res) => {
   const { paymentId } = req.body;
 
   if (!paymentId) {
