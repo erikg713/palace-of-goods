@@ -1,7 +1,7 @@
 {
   "name": "palace-of-goods",
-  "version": "1.0.0",
-  "description": "Palace of Goods - An e-commerce Web3 app built for Pi Network!",
+  "version": "1.1.0",
+  "description": "Palace of Goods - A Web3-enabled e-commerce marketplace for Pi Network",
   "main": "dist/server.js",
   "repository": {
     "type": "git",
@@ -9,9 +9,10 @@
   },
   "scripts": {
     "start": "node dist/server.js",
-    "prestart": "tsc", 
+    "prestart": "tsc",
     "dev": "nodemon --ext ts --exec ts-node src/server.ts",
     "build": "tsc",
+    "lint": "echo \"Add ESLint later\"",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
@@ -21,9 +22,21 @@
     "helmet": "^6.0.1",
     "morgan": "^1.10.0",
     "mongoose": "^7.0.0",
+
     "stripe": "^12.0.0",
+
     "bcryptjs": "^2.4.3",
-    "jsonwebtoken": "^9.0.0"
+    "jsonwebtoken": "^9.0.0",
+
+    "express-rate-limit": "^7.0.0",
+    "express-validator": "^7.0.1",
+
+    "multer": "^1.4.5-lts.1",
+
+    "ethers": "^6.9.0",
+    "web3": "^4.3.0",
+
+    "uuid": "^9.0.1"
   },
   "devDependencies": {
     "typescript": "^5.0.0",
@@ -31,12 +44,22 @@
     "nodemon": "^3.0.1",
     "@types/node": "^18.0.0",
     "@types/express": "^4.17.15",
-    "@types/mongoose": "^7.0.0"
+    "@types/mongoose": "^7.0.0",
+    "@types/jsonwebtoken": "^9.0.2",
+    "@types/multer": "^1.4.12"
   },
   "engines": {
-    "node": ">=16.0.0"
+    "node": ">=18.0.0"
   },
-  "keywords": ["ecommerce", "store", "express", "backend", "web3", "pi-network"],
-  "author": "Your Name",
+  "keywords": [
+    "ecommerce",
+    "marketplace",
+    "web3",
+    "pi-network",
+    "crypto",
+    "express",
+    "typescript"
+  ],
+  "author": "Erik Gordon",
   "license": "MIT"
 }
